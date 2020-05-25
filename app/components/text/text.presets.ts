@@ -1,45 +1,75 @@
-import { TextStyle } from "react-native"
-import { color, typography } from "../../theme"
+import { color, getFontStyleObject } from "../../theme"
 
-/**
- * All text will start off looking like this.
- */
-const BASE: TextStyle = {
-  fontFamily: typography.primary,
-  color: color.text,
-  fontSize: 15,
-}
-
-/**
- * All the variations of text styling within the app.
- *
- * You want to customize these to whatever you need in your app.
- */
 export const presets = {
   /**
    * The default text styles.
    */
-  default: BASE,
+  text: {
+    fontSize: 18,
+    ...getFontStyleObject(),
+  },
+  bold: {
+    ...getFontStyleObject({ weight: "Bold" }),
+  },
+  primary: {
+    color: color.primary,
+  },
+  primaryDarker: {
+    color: color.primaryDarker
+  },
+  white: {
+    color: color.palette.white,
+  },
+  dullWhite: {
+    color: color.palette.offWhite,
+  },
+  small: {
+    fontSize: 15,
+  },
+  xLarge: {
+    fontSize: 30,
+  },
+  large: {
+    fontSize: 22,
+  },
+  center: {
+    textAlign: "center",
+  },
+  right: { textAlign: "right", alignSelf: "stretch" },
+  muted: {
+    color: color.palette.lightGrey,
+  },
+  paragraph: {
+    color: color.palette.darkGrey,
+    fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+  },
+  header: {
+    fontSize: 35,
+    ...getFontStyleObject({ weight: "Bold" }),
+  },
+  fontAnson: {
+    ...getFontStyleObject({ weight: "Regular" }),
+  },
+  underline: {
+    textDecorationLine: "underline",
+  },
+  link: {
+    textDecorationLine: "underline",
+    color: color.palette.link,
+  },
+  validationError: {
+    color: color.palette.angry,
+    fontSize: 15,
+    marginTop: 5,
+    padding: "1%",
+  },
 
-  /**
-   * A bold version of the default text.
-   */
-  bold: { ...BASE, fontWeight: "bold" } as TextStyle,
-
-  /**
-   * Large headers.
-   */
-  header: { ...BASE, fontSize: 24, fontWeight: "bold" } as TextStyle,
-
-  /**
-   * Field labels that appear on forms above the inputs.
-   */
-  fieldLabel: { ...BASE, fontSize: 13, color: color.dim } as TextStyle,
-
-  /**
-   * A smaller piece of secondard information.
-   */
-  secondary: { ...BASE, fontSize: 9, color: color.dim } as TextStyle,
+  quote: {
+    fontStyle: "italic"
+  }
 }
 
 /**

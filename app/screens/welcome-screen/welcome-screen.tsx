@@ -1,115 +1,204 @@
-import React, { FunctionComponent as Component } from "react"
-import { View, Image, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
+import React, { FunctionComponent as Component, useState } from "react"
+import {
+  View,
+  Image,
+  ViewStyle,
+  TextStyle,
+  ImageStyle,
+  SafeAreaView,
+  StatusBar,
+  Dimensions,
+} from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { observer } from "mobx-react-lite"
 import { Button, Header, Screen, Text, Wallpaper } from "../../components"
 import { color, spacing } from "../../theme"
-const bowserLogo = require("./bowser.png")
+import Lottie from "lottie-react-native"
+import Carousel, { Pagination } from "react-native-snap-carousel"
+
+const { width, height } = Dimensions.get("window")
 
 const FULL: ViewStyle = { flex: 1 }
-const CONTAINER: ViewStyle = {
-  backgroundColor: color.transparent,
-  paddingHorizontal: spacing[4],
+
+const CONTAINER: ViewStyle = { backgroundColor: "transparent", alignItems: "center" }
+
+const HEADING: TextStyle = {
+  marginBottom: spacing.medium,
 }
-const TEXT: TextStyle = {
-  color: color.palette.white,
-  fontFamily: "Montserrat",
-}
-const BOLD: TextStyle = { fontWeight: "bold" }
-const HEADER: TextStyle = {
-  paddingTop: spacing[3],
-  paddingBottom: spacing[4] + spacing[1],
-  paddingHorizontal: 0,
-}
-const HEADER_TITLE: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 12,
-  lineHeight: 15,
-  textAlign: "center",
-  letterSpacing: 1.5,
-}
-const TITLE_WRAPPER: TextStyle = {
-  ...TEXT,
-  textAlign: "center",
-}
-const TITLE: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 28,
-  lineHeight: 38,
-  textAlign: "center",
-}
-const ALMOST: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 26,
-  fontStyle: "italic",
-}
-const BOWSER: ImageStyle = {
-  alignSelf: "center",
-  marginVertical: spacing[5],
-  maxWidth: "100%",
-}
-const CONTENT: TextStyle = {
-  ...TEXT,
-  color: "#BAB6C8",
-  fontSize: 15,
-  lineHeight: 22,
-  marginBottom: spacing[5],
-}
-const CONTINUE: ViewStyle = {
-  paddingVertical: spacing[4],
-  paddingHorizontal: spacing[4],
-  backgroundColor: "#5D2555",
-}
-const CONTINUE_TEXT: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 13,
-  letterSpacing: 2,
-}
-const FOOTER: ViewStyle = { backgroundColor: "#20162D" }
-const FOOTER_CONTENT: ViewStyle = {
-  paddingVertical: spacing[4],
-  paddingHorizontal: spacing[4],
+
+const SUB_HEADING: TextStyle = {
+  marginHorizontal: `${spacing.medium}%`,
 }
 
 export const WelcomeScreen: Component = observer(function WelcomeScreen() {
   const navigation = useNavigation()
   const nextScreen = () => navigation.navigate("demo")
 
+  const [activeSlide, setActiveSlide] = useState(0)
+
   return (
     <View style={FULL}>
-      <Wallpaper />
-      <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
-        <Header headerTx="welcomeScreen.poweredBy" style={HEADER} titleStyle={HEADER_TITLE} />
-        <Text style={TITLE_WRAPPER}>
-          <Text style={TITLE} text="Your new app, " />
-          <Text style={ALMOST} text="almost" />
-          <Text style={TITLE} text="!" />
-        </Text>
-        <Text style={TITLE} preset="header" tx="welcomeScreen.readyForLaunch" />
-        <Image source={bowserLogo} style={BOWSER} />
-        <Text style={CONTENT}>
-          This probably isn't what your app is going to look like. Unless your designer handed you
-          this screen and, in that case, congrats! You're ready to ship.
-        </Text>
-        <Text style={CONTENT}>
-          For everyone else, this is where you'll see a live preview of your fully functioning app
-          using Ignite.
-        </Text>
+      <StatusBar barStyle="light-content" backgroundColor="blue" />
+      <Screen style={CONTAINER} preset="fixed">
+        <Carousel
+          data={["welcome", "document", "sugar"]}
+          renderItem={({ item }) => {
+            switch (item) {
+              case "welcome":
+                return <Welcome />
+              case "document":
+                return <Document />
+              case "sugar":
+                return <Sugar onLoginPress={nextScreen}/>
+              default:
+                return null
+            }
+          }}
+          sliderWidth={width}
+          itemWidth={width}
+          onSnapToItem={setActiveSlide}
+        />
+        <PaginationComponent length={3} activeSlide={activeSlide} />
       </Screen>
-      <SafeAreaView style={FOOTER}>
-        <View style={FOOTER_CONTENT}>
-          <Button
-            style={CONTINUE}
-            textStyle={CONTINUE_TEXT}
-            tx="welcomeScreen.continue"
-            onPress={nextScreen}
-          />
-        </View>
-      </SafeAreaView>
     </View>
   )
 })
+
+const Sugar = ({ onLoginPress }) => {
+  return (
+    <View style={{ flex: 1, alignItems: "center" }}>
+      <View
+        style={{ flex: 1, marginTop: spacing.huge, alignItems: "center", justifyContent: "center" }}
+      >
+        <Lottie
+          source={require("./4251-plant-office-desk.json")}
+          autoPlay
+          loop
+          style={{ width: width * 0.33, height: 200, marginBottom: spacing.medium }}
+          colorFilters={[
+            {
+              keypath: "Layer 2/Scan animation Outlines",
+              color: "blue",
+            },
+          ]}
+        />
+        <Text style={[HEADING, { fontSize: 32 }]} preset="header">
+          That's it folk
+        </Text>
+        <Text preset={["center", "small"]} style={SUB_HEADING}>
+          Sounds simple right. So get on
+        </Text>
+      </View>
+      <Text preset={["center", "primaryDarker", "bold"]} style={{ padding: spacing.medium }} onPress={onLoginPress}>Login now</Text>
+    </View>
+  )
+}
+
+const Document = () => {
+  return (
+    <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
+      <Lottie
+        source={require("./7151-document-scanning.json")}
+        autoPlay
+        loop
+        style={{ width: width * 0.33, height: 200, marginBottom: spacing.medium }}
+        colorFilters={[
+          {
+            keypath: "Layer 2/Scan animation Outlines",
+            color: "blue",
+          },
+        ]}
+      />
+
+      <Text preset="header" style={[HEADING, { fontSize: 22 }]}>
+        Let's get started
+      </Text>
+      <Text preset={["center", "small"]} style={SUB_HEADING}>
+        Get on-board by following these simple steps. Our app will guide you for hassle free process
+      </Text>
+
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <StepComponent
+          source={require("./21170-password-protected-cloud-computing.json")}
+          style={{ marginStart: 9, marginBottom: -10 }}
+          text="Get your credentials"
+        />
+        <StepComponent
+          source={require("./8502-scan-receipt.json")}
+          style={{ height: 80 }}
+          text="Scan your document"
+          textStyle={{ marginStart: spacing.small, marginTop: 10 }}
+        />
+        <StepComponent
+          source={require("./5323-uploading-completed.json")}
+          text="Upload documents"
+          textStyle={{ marginStart: 5 }}
+        />
+      </View>
+    </View>
+  )
+}
+
+const StepComponent = ({ source, text, style, textStyle }) => {
+  return (
+    <View
+      style={{ flexDirection: "row", alignItems: "center", marginVertical: `${spacing.tiny}%` }}
+    >
+      <Lottie
+        source={source}
+        style={{
+          width: 50,
+          height: 50,
+          marginHorizontal: `${spacing.small}%`,
+          marginStart: 5,
+          ...style,
+        }}
+        autoPlay
+        loop
+      />
+      <Text preset={["center", "small", "bold"]} style={textStyle}>
+        {text}
+      </Text>
+    </View>
+  )
+}
+
+const PaginationComponent = props => {
+  return (
+    <Pagination
+      dotsLength={props.length}
+      activeDotIndex={props.activeSlide}
+      containerStyle={{ backgroundColor: "transparent" }}
+      dotStyle={{
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: "rgba(0, 0, 255, 0.92)",
+      }}
+      inactiveDotStyle={
+        {
+          // Define styles for inactive dots here
+        }
+      }
+      inactiveDotOpacity={0.4}
+      inactiveDotScale={0.6}
+    />
+  )
+}
+
+const Welcome = () => (
+  <View style={{ alignItems: "center", justifyContent: "center" }}>
+    <Lottie
+      style={{ width: width * 0.5, height: height * 0.5, marginBottom: spacing.huge }}
+      source={require("./21468-my-desk.json")}
+      autoPlay
+      loop
+    />
+    <Text preset="header" style={HEADING}>
+      Welcome
+    </Text>
+    <Text preset={["center", "small"]} style={SUB_HEADING}>
+      Automatic idenitity verification which enables you to verify your idenitity
+    </Text>
+  </View>
+)
