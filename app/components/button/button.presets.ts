@@ -6,11 +6,7 @@ import { color, spacing } from "../../theme"
  */
 const BASE_VIEW: ViewStyle = {
   marginVertical: `${spacing.tiny}%`,
-  paddingVertical: spacing.medium,
-  paddingHorizontal: spacing.medium,
   borderRadius: 50,
-  justifyContent: "center",
-  alignItems: "center",
   shadowColor: color.palette.blueDarker,
   shadowOffset: {
     width: 0,
@@ -18,7 +14,6 @@ const BASE_VIEW: ViewStyle = {
   },
   shadowOpacity: 0.5,
   shadowRadius: 5,
-
   elevation: 5,
 }
 

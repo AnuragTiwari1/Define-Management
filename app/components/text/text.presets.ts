@@ -20,6 +20,9 @@ export const presets = {
   white: {
     color: color.palette.white,
   },
+  angry: {
+    color: color.palette.angry
+  },
   dullWhite: {
     color: color.palette.offWhite,
   },

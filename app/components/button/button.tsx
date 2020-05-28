@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Button as PaperButton } from "react-native-paper"
-import { spacing } from "../../theme"
 import { viewPresets } from "./button.presets"
+import { spacing } from "../../theme"
 
 type ButtonProps = React.ComponentProps<typeof PaperButton>
 
@@ -13,7 +13,15 @@ type ButtonProps = React.ComponentProps<typeof PaperButton>
 export const Button = (props: ButtonProps) => {
   const { children, style, ...rest } = props
   return (
-    <PaperButton mode="contained" style={{ ...viewPresets.primary }}>
+    <PaperButton
+      mode="contained"
+      style={[viewPresets.primary, style]}
+      contentStyle={{
+        paddingVertical: spacing.medium,
+        paddingHorizontal: spacing.medium,
+      }}
+      {...rest}
+    >
       {children}
     </PaperButton>
   )

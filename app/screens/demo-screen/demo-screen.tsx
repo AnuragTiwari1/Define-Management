@@ -34,6 +34,9 @@ export const DemoScreen: Component = observer(function DemoScreen() {
       password: Yup.string().required(),
     }),
   })
+  const { navigate } = useNavigation()
+  const nextScreen = () => navigate("uploadPhoto")
+
   return (
     <View style={FULL}>
       <Screen style={CONTAINER} preset="fixed">
@@ -49,7 +52,7 @@ export const DemoScreen: Component = observer(function DemoScreen() {
           <FormContext {...methods}>
             <FormInput name="userId" label="User name" />
             <FormInput name="password" label="Password" />
-            <Button>Get Started</Button>
+            <Button onPress={nextScreen}>Get Started</Button>
           </FormContext>
         </View>
       </Screen>
