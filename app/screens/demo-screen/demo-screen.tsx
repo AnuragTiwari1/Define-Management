@@ -49,7 +49,7 @@ export const DemoScreen: Component = observer(function DemoScreen() {
           <FormContext {...methods}>
             <FormInput name="userId" label="User name" />
             <FormInput name="password" label="Password" />
-            <Button>Press me</Button>
+            <Button>Get Started</Button>
           </FormContext>
         </View>
       </Screen>

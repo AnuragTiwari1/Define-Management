@@ -5,11 +5,21 @@ import { color, spacing } from "../../theme"
  * All text will start off looking like this.
  */
 const BASE_VIEW: ViewStyle = {
-  paddingVertical: spacing.small,
-  paddingHorizontal: spacing.small,
-  borderRadius: 4,
+  marginVertical: `${spacing.tiny}%`,
+  paddingVertical: spacing.medium,
+  paddingHorizontal: spacing.medium,
+  borderRadius: 50,
   justifyContent: "center",
   alignItems: "center",
+  shadowColor: color.palette.blueDarker,
+  shadowOffset: {
+    width: 0,
+    height: 10,
+  },
+  shadowOpacity: 0.5,
+  shadowRadius: 5,
+
+  elevation: 5,
 }
 
 const BASE_TEXT: TextStyle = {
