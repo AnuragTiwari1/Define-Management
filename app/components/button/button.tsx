@@ -1,37 +1,20 @@
 import * as React from "react"
-import { TouchableOpacity } from "react-native"
-import { Text } from "../text/text"
-import { viewPresets, textPresets } from "./button.presets"
-import { ButtonProps } from "./button.props"
-import { mergeAll, flatten } from "ramda"
+import { Button as PaperButton } from "react-native-paper"
+import { spacing } from "../../theme"
+import { viewPresets } from "./button.presets"
+
+type ButtonProps = React.ComponentProps<typeof PaperButton>
 
 /**
  * For your text displaying needs.
  *
  * This component is a HOC over the built-in React Native one.
  */
-export function Button(props: ButtonProps) {
-  // grab the props
-  const {
-    preset = "primary",
-    tx,
-    text,
-    style: styleOverride,
-    textStyle: textStyleOverride,
-    children,
-    ...rest
-  } = props
-
-  const viewStyle = mergeAll(flatten([viewPresets[preset] || viewPresets.primary, styleOverride]))
-  const textStyle = mergeAll(
-    flatten([textPresets[preset] || textPresets.primary, textStyleOverride]),
-  )
-
-  const content = children || <Text tx={tx} text={text} style={textStyle} />
-
+export const Button = (props: ButtonProps) => {
+  const { children, style, ...rest } = props
   return (
-    <TouchableOpacity style={viewStyle} {...rest}>
-      {content}
-    </TouchableOpacity>
+    <PaperButton mode="contained" style={{ ...viewPresets.primary }}>
+      {children}
+    </PaperButton>
   )
 }

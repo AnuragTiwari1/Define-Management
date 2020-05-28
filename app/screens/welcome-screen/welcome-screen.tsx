@@ -1,18 +1,9 @@
 import React, { FunctionComponent as Component, useState } from "react"
-import {
-  View,
-  Image,
-  ViewStyle,
-  TextStyle,
-  ImageStyle,
-  SafeAreaView,
-  StatusBar,
-  Dimensions,
-} from "react-native"
+import { View, ViewStyle, TextStyle, StatusBar, Dimensions } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, Text, Wallpaper } from "../../components"
-import { color, spacing } from "../../theme"
+import { Screen, Text } from "../../components"
+import { spacing } from "../../theme"
 import Lottie from "lottie-react-native"
 import Carousel, { Pagination } from "react-native-snap-carousel"
 
@@ -49,7 +40,7 @@ export const WelcomeScreen: Component = observer(function WelcomeScreen() {
               case "document":
                 return <Document />
               case "sugar":
-                return <Sugar onLoginPress={nextScreen}/>
+                return <Sugar onLoginPress={nextScreen} />
               default:
                 return null
             }
@@ -89,7 +80,13 @@ const Sugar = ({ onLoginPress }) => {
           Sounds simple right. So get on
         </Text>
       </View>
-      <Text preset={["center", "primaryDarker", "bold"]} style={{ padding: spacing.medium }} onPress={onLoginPress}>Login now</Text>
+      <Text
+        preset={["center", "primaryDarker", "bold"]}
+        style={{ padding: spacing.medium }}
+		  onPress={onLoginPress}
+      >
+        Login now
+      </Text>
     </View>
   )
 }
