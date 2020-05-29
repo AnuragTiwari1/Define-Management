@@ -10,6 +10,7 @@ import { FormInput } from "../../components/formInput"
 import { useFetch } from "use-fetch-lib"
 import { isAngry } from "../../utils/apiHelpers"
 import { useStores } from "../../models"
+import { PRETTY_ERROR_MESSAGE } from "../../config/constanst"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -41,7 +42,7 @@ export const DemoScreen: Component = observer(function DemoScreen() {
   const { navigate } = useNavigation()
   const nextScreen = () => navigate("uploadPhoto")
 
-  const { appStateStore } = useStores()
+  const { appStateStore, userProfileStore } = useStores()
 
   const [{ data, status }, doLogin] = useFetch({
     url: "",
@@ -52,7 +53,13 @@ export const DemoScreen: Component = observer(function DemoScreen() {
     if (status.isFulfilled) {
       if (isAngry(data)) {
         appStateStore.toast.setToast({ text: isAngry(data), styles: "angry" })
+      } else {
+        userProfileStore.setUserProfile(data)
+        // nextScreen()
+        appStateStore.toast.setToast({ text: "Login successfull!", styles: "success" })
       }
+    } else if (status.isRejected) {
+      appStateStore.toast.setToast({ text: PRETTY_ERROR_MESSAGE, styles: "angry" })
     }
   }, [status])
 
@@ -80,7 +87,9 @@ export const DemoScreen: Component = observer(function DemoScreen() {
           <FormContext {...methods}>
             <FormInput name="userId" label="User name" />
             <FormInput name="password" label="Password" secureTextEntry />
-            <Button onPress={methods.handleSubmit(onSubmit)}>Get Started</Button>
+            <Button onPress={methods.handleSubmit(onSubmit)} loading={status.isPending}>
+              Get Started
+            </Button>
           </FormContext>
         </View>
       </Screen>
