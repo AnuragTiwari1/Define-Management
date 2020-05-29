@@ -7,6 +7,9 @@ import { spacing } from "../../theme"
 import { useForm, FormContext } from "react-hook-form"
 import * as Yup from "yup"
 import { FormInput } from "../../components/formInput"
+import { useFetch } from "use-fetch-lib"
+import { isAngry } from "../../utils/apiHelpers"
+import { useStores } from "../../models"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -16,7 +19,7 @@ const CONTAINER: ViewStyle = {
 
 const FORM_CONTAINER: ViewStyle = {
   backgroundColor: "white",
-  paddingTop: spacing.huge,
+  paddingTop: `${spacing.large}%`,
   borderTopLeftRadius: spacing.huge * 0.75,
   borderTopRightRadius: spacing.huge * 0.75,
   paddingHorizontal: spacing.large,
@@ -34,8 +37,33 @@ export const DemoScreen: Component = observer(function DemoScreen() {
       password: Yup.string().required(),
     }),
   })
+
   const { navigate } = useNavigation()
   const nextScreen = () => navigate("uploadPhoto")
+
+  const { appStateStore } = useStores()
+
+  const [{ data, status }, doLogin] = useFetch({
+    url: "",
+    method: "post",
+  })
+
+  React.useEffect(() => {
+    if (status.isFulfilled) {
+      if (isAngry(data)) {
+        appStateStore.toast.setToast({ text: isAngry(data), styles: "angry" })
+      }
+    }
+  }, [status])
+
+  const onSubmit = data => {
+    const formData = new FormData()
+    formData.append("action", "login")
+    formData.append("phone", data.userId)
+    formData.append("password", data.password)
+
+    doLogin(formData)
+  }
 
   return (
     <View style={FULL}>
@@ -51,8 +79,8 @@ export const DemoScreen: Component = observer(function DemoScreen() {
           <Text preset={["small"]}>create an account and let us handle the rest</Text>
           <FormContext {...methods}>
             <FormInput name="userId" label="User name" />
-            <FormInput name="password" label="Password" />
-            <Button onPress={nextScreen}>Get Started</Button>
+            <FormInput name="password" label="Password" secureTextEntry />
+            <Button onPress={methods.handleSubmit(onSubmit)}>Get Started</Button>
           </FormContext>
         </View>
       </Screen>

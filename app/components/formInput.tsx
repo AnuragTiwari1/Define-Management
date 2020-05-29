@@ -1,6 +1,6 @@
 import React from "react"
 import { Controller, ControllerProps, useFormContext } from "react-hook-form"
-import { TextInput } from "react-native-paper"
+import { TextInput, HelperText } from "react-native-paper"
 import { color, spacing } from "../theme"
 import { Text } from "./text/text"
 import { View } from "react-native"
@@ -40,26 +40,32 @@ export const FormInput = (props: FormInputProps) => {
     ...rest
   } = props
   const { errors, control } = useFormContext()
+  const isErrored = `${errors?.[name]?.message ?? ""}`.length > 0
   return (
-    <Controller
-      as={
-        <StyledTextInput
-          label={required ? `${label}*` : label}
-          error={`${errors?.[name]?.message ?? ""}`.length > 0}
-          placeholder={placeholder}
-          style={inputContainerStyle}
-          {...rest}
-        />
-      }
-      name={name}
-      onChangeName={props.mask ? "onChangeText" : "onChange"}
-      onChange={
-        onChange && typeof onChange === "function"
-          ? onChange
-          : args => (props.mask ? args[0] : args[0].nativeEvent.text)
-      }
-      {...{ defaultValue, control }}
-    />
+    <View>
+      <Controller
+        as={
+          <StyledTextInput
+            label={required ? `${label}*` : label}
+            error={isErrored}
+            placeholder={placeholder}
+            style={inputContainerStyle}
+            {...rest}
+          />
+        }
+        name={name}
+        onChangeName={props.mask ? "onChangeText" : "onChange"}
+        onChange={
+          onChange && typeof onChange === "function"
+            ? onChange
+            : args => (props.mask ? args[0] : args[0].nativeEvent.text)
+        }
+        {...{ defaultValue, control }}
+      />
+      <HelperText type="error" visible={isErrored}>
+        {errors?.[name]?.message}
+      </HelperText>
+    </View>
   )
 }
 
