@@ -39,15 +39,16 @@ const RootStack = observer(() => {
         gestureEnabled: true,
         stackPresentation: "modal",
       }}
-      initialRouteName={appStateStore.isLoggedIn ? "appStack" : "primaryStack"}
     >
-      <Stack.Screen
-        name="primaryStack"
-        component={PrimaryNavigator}
-        options={{
-          headerShown: false,
-        }}
-      />
+      {!appStateStore.isLoggedIn && (
+        <Stack.Screen
+          name="primaryStack"
+          component={PrimaryNavigator}
+          options={{
+            headerShown: false,
+          }}
+        />
+      )}
       <Stack.Screen name="appStack" component={AppNavigator} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
