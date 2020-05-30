@@ -6,6 +6,7 @@ import { Screen, Text } from "../../components"
 import { spacing } from "../../theme"
 import Lottie from "lottie-react-native"
 import Carousel, { Pagination } from "react-native-snap-carousel"
+import { useStores } from "../../models"
 
 const { width, height } = Dimensions.get("window")
 
@@ -23,7 +24,12 @@ const SUB_HEADING: TextStyle = {
 
 export const WelcomeScreen: Component = observer(function WelcomeScreen() {
   const navigation = useNavigation()
-  const nextScreen = () => navigation.navigate("demo")
+  const { appStateStore } = useStores()
+
+  const nextScreen = () => {
+    appStateStore.setWelcome(true)
+    navigation.navigate("demo")
+  }
 
   const [activeSlide, setActiveSlide] = useState(0)
 
@@ -83,7 +89,7 @@ const Sugar = ({ onLoginPress }) => {
       <Text
         preset={["center", "primaryDarker", "bold"]}
         style={{ padding: spacing.medium }}
-		  onPress={onLoginPress}
+        onPress={onLoginPress}
       >
         Login now
       </Text>

@@ -19,7 +19,7 @@ const toastModal = types
     text: types.optional(types.string, ""),
     styles: types.optional(types.string, ""),
   })
-  .actions((self) => ({
+  .actions(self => ({
     setToast(newToast) {
       self.text = newToast.text
       self.styles = newToast.styles
@@ -28,11 +28,20 @@ const toastModal = types
 
 export const AppStateModel = types
   .model("AppStateModel", {
-    toast: types.optional(toastModal,DEFAULT_APPSTATE.toast)
+    toast: types.optional(toastModal, DEFAULT_APPSTATE.toast),
+    hasWelcomed: types.optional(types.boolean, false),
+    isLoggedIn: types.optional(types.boolean, false),
   })
   .props({})
-  .views((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
-  .actions((self) => ({}))
+  .views(self => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
+  .actions(self => ({
+    setWelcome(bool) {
+      self.hasWelcomed = bool
+    },
+    setLoggedIn(bool) {
+      self.isLoggedIn = bool
+    },
+  }))
   .postProcessSnapshot(omit(["toast"]))
 
 type AppStateType = Instance<typeof AppStateModel>

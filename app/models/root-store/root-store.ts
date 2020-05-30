@@ -1,6 +1,7 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { AppStateModel, DEFAULT_APPSTATE } from "../app-state-model"
 import { UserProfileModel } from "../user-profile/user-profile"
+import { UserListModel } from "../user-list/user-list"
 
 /**
  * A RootStore model.
@@ -8,7 +9,8 @@ import { UserProfileModel } from "../user-profile/user-profile"
 // prettier-ignore
 export const RootStoreModel = types.model("RootStore").props({
   appStateStore: types.optional(AppStateModel, DEFAULT_APPSTATE),
-  userProfileStore: types.optional(UserProfileModel, {})
+  userProfileStore: types.optional(UserProfileModel, {}),
+  userListStore: types.optional(UserListModel, {})
 })
 
 /**

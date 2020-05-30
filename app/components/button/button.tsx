@@ -16,7 +16,7 @@ export const Button = (props: ButtonProps) => {
     <PaperButton
       mode="contained"
       style={[viewPresets.primary, style]}
-	  disabled={rest.loading}
+      disabled={rest.loading}
       contentStyle={{
         paddingVertical: spacing.medium,
         paddingHorizontal: spacing.medium,

@@ -6,9 +6,11 @@
  */
 import React from "react"
 import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native"
-
 import { createNativeStackNavigator } from "react-native-screens/native-stack"
 import { PrimaryNavigator } from "./primary-navigator"
+import { AppNavigator } from "./app-navigator"
+import { observer } from "mobx-react-lite"
+import { useStores } from "../models"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -22,19 +24,22 @@ import { PrimaryNavigator } from "./primary-navigator"
  */
 export type RootParamList = {
   primaryStack: undefined
+  appStack: undefined
 }
 
 const Stack = createNativeStackNavigator<RootParamList>()
 
-const RootStack = () => {
+const RootStack = observer(() => {
+  const { appStateStore } = useStores()
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
-
         stackPresentation: "modal",
       }}
+      initialRouteName={appStateStore.isLoggedIn ? "appStack" : "primaryStack"}
     >
       <Stack.Screen
         name="primaryStack"
@@ -43,9 +48,10 @@ const RootStack = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="appStack" component={AppNavigator} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
-}
+})
 
 export const RootNavigator = React.forwardRef<
   NavigationContainerRef,

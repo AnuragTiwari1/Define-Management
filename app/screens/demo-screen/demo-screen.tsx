@@ -1,6 +1,6 @@
 import React, { FunctionComponent as Component } from "react"
-import { View, ViewStyle } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { View, ViewStyle, BackHandler } from "react-native"
+import { useNavigation, useFocusEffect } from "@react-navigation/native"
 import { observer } from "mobx-react-lite"
 import { Text, Screen, Button } from "../../components"
 import { spacing } from "../../theme"
@@ -40,7 +40,7 @@ export const DemoScreen: Component = observer(function DemoScreen() {
   })
 
   const { navigate } = useNavigation()
-  const nextScreen = () => navigate("uploadPhoto")
+  const nextScreen = () => navigate("appStack")
 
   const { appStateStore, userProfileStore } = useStores()
 
@@ -49,13 +49,27 @@ export const DemoScreen: Component = observer(function DemoScreen() {
     method: "post",
   })
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        BackHandler.exitApp()
+        return true
+      }
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress)
+
+      return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
+    }, []),
+  )
+
   React.useEffect(() => {
     if (status.isFulfilled) {
       if (isAngry(data)) {
         appStateStore.toast.setToast({ text: isAngry(data), styles: "angry" })
       } else {
         userProfileStore.setUserProfile(data)
-        // nextScreen()
+        appStateStore.setLoggedIn(true)
+        nextScreen()
         appStateStore.toast.setToast({ text: "Login successfull!", styles: "success" })
       }
     } else if (status.isRejected) {
