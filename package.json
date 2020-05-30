@@ -41,7 +41,6 @@
     "react-hook-form": "git+https://github.com/AnuragTiwari1/react-hook-form.git",
     "react-native": "0.61.5",
     "react-native-circular-action-menu": "^0.5.0",
-    "react-native-config": "^1.2.0",
     "react-native-dotenv": "^0.2.0",
     "react-native-gesture-handler": "^1.5.0",
     "react-native-image-picker": "^2.3.1",

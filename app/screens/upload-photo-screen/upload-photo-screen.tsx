@@ -2,8 +2,8 @@ import React, { FunctionComponent as Component } from "react"
 import { observer } from "mobx-react-lite"
 import { ViewStyle, View, StyleSheet, Image, TextStyle, Dimensions } from "react-native"
 import { Screen, Text } from "../../components"
-// import { useNavigation } from "@react-navigation/native"
-// import { useStores } from "../models"
+import { useNavigation } from "@react-navigation/native"
+import { useStores } from "../models"
 import { color, spacing } from "../../theme"
 import ActionButton from "react-native-circular-action-menu"
 import Icon from "react-native-vector-icons/AntDesign"
@@ -38,6 +38,8 @@ const ACTION_BUTTON_ICON: TextStyle = {
   height: 32,
   color: "white",
 }
+
+type TabNames = "selfie" | "document" | "building" | "locality" | "landmark"
 
 const FABIcons = props => {
   const { name, ...rest } = props
@@ -81,16 +83,70 @@ const FABIcons = props => {
 }
 
 export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen() {
-  // Pull in one of our MST stores
   // const { someStore, anotherStore } = useStores()
-  // OR
-  // const rootStore = useStores()
-
-  // Pull in navigation via hook
   // const navigation = useNavigation()
+  //
+
+  const [activeTab, setActiveTab] = React.useState("selfie" as TabNames)
+
   return (
     <Screen style={ROOT} preset="fixed">
-      <ScannerIntro />
+      {
+        {
+          selfie: (
+            <ScannerIntro
+              name="image1"
+              introHeading="Take a selfie"
+              introImage={require("./selfie.png")}
+              introText="
+          Please take a photo of your self ensuring that your face is clearly visible. In case of
+          picking from gallary make sure it is one of your latest clicks
+        "
+            />
+          ),
+          document: (
+            <ScannerIntro
+              name="image2"
+              introText="Please take a photo of your self ensuring that your face is clearly visible. In case of
+          picking from gallary make sure it is one of your latest clicks
+"
+              introHeading="Upload a id proof"
+              introImage={require("./id-card.png")}
+            />
+          ),
+          building: (
+            <ScannerIntro
+              name="image2"
+              introText="Please take a photo of your self ensuring that your face is clearly visible. In case of
+          picking from gallary make sure it is one of your latest clicks
+"
+              introHeading="Snap a picture of your building"
+              introImage={require("./home.png")}
+            />
+          ),
+          locality: (
+            <ScannerIntro
+              name="image2"
+              introText="Please take a photo of your self ensuring that your face is clearly visible. In case of
+          picking from gallary make sure it is one of your latest clicks
+"
+              introHeading="shows us your locality"
+              introImage={require("./place.png")}
+            />
+          ),
+          landmark: (
+            <ScannerIntro
+              name="image2"
+              introText="Please take a photo of your self ensuring that your face is clearly visible. In case of
+          picking from gallary make sure it is one of your latest clicks
+"
+              introHeading="Know a landmark"
+              introImage={require("./bridge.png")}
+            />
+          ),
+        }[activeTab as TabNames]
+      }
+
       <View style={TAB_BAR_CONTAINER}>
         <Text preset={["bold", "angry", "large"]}>Cancel</Text>
         <Text preset={["bold", "primary", "large"]}>Save</Text>
@@ -106,7 +162,7 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
           buttonColor={color.palette.blue}
           title="New Task"
           size={60}
-          onPress={() => console.log("notes tapped!")}
+          onPress={() => setActiveTab("selfie")}
         >
           <FABIcons name="selfie" />
         </ActionButton.Item>
@@ -114,7 +170,7 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
           buttonColor={color.palette.blue}
           title="Notifications"
           size={60}
-          onPress={() => {}}
+          onPress={() => setActiveTab("document")}
         >
           <FABIcons name="id-card" />
         </ActionButton.Item>
@@ -122,7 +178,7 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
           buttonColor={color.palette.blue}
           size={60}
           title="All Tasks"
-          onPress={() => {}}
+          onPress={() => setActiveTab("building")}
         >
           <FABIcons name="home" />
         </ActionButton.Item>
@@ -130,7 +186,7 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
           buttonColor={color.palette.blue}
           size={60}
           title="All Tasks"
-          onPress={() => {}}
+          onPress={() => setActiveTab("landmark")}
         >
           <FABIcons name="bridge" />
         </ActionButton.Item>
@@ -138,7 +194,7 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
           buttonColor={color.palette.blue}
           size={60}
           title="All Tasks"
-          onPress={() => {}}
+          onPress={() => setActiveTab("locality")}
         >
           <FABIcons name="locality" />
         </ActionButton.Item>
@@ -147,23 +203,16 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
   )
 })
 
-const ScannerIntro = () => {
+const ScannerIntro = ({ name, introImage, introText, introHeading }) => {
   const methods = useForm({ defaultValues: {} })
   return (
     <View style={ITEMS_CONTAINER}>
       <View style={{ width: "100%", alignItems: "center", padding: `${spacing.medium}%` }}>
-        <Image
-          source={require("./selfie.png")}
-          style={{ width: "50%", height: 150 }}
-          resizeMode="contain"
-        />
+        <Image source={introImage} style={{ width: "50%", height: 150 }} resizeMode="contain" />
         <Text preset={["bold"]} style={{ marginTop: spacing.large }}>
-          Take A Selfie
+          {introHeading}
         </Text>
-        <Text preset={["small", "center", "muted"]}>
-          Please take a photo of your self ensuring that your face is clearly visible. In case of
-          picking from gallary make sure it is one of your latest clicks
-        </Text>
+        <Text preset={["small", "center", "muted"]}>{introText}</Text>
       </View>
       <FormContext {...methods}>
         <FormImagePicker name="profilePic" handleReject={text => console.log("the cond is bad")} />
@@ -171,4 +220,3 @@ const ScannerIntro = () => {
     </View>
   )
 }
-
