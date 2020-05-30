@@ -5,10 +5,11 @@ import { Screen, Text } from "../components"
 import { useNavigation } from "@react-navigation/native"
 import { useStores, PersonModalSnapshot, UserListModel } from "../models"
 import { color } from "../theme"
-import { API_URL } from "react-native-dotenv"
 import { PRETTY_ERROR_MESSAGE } from "../config/constanst"
 import Axios from "axios"
 import Icon from "react-native-vector-icons/AntDesign"
+
+const { API_URL } = require("../config/env")
 
 const CONTAINER: ViewStyle = {
   backgroundColor: "blue",

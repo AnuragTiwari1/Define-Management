@@ -23,8 +23,6 @@ import {
   useNavigationPersistence,
 } from "./navigation"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models"
-import { UseFetchProvider } from "use-fetch-lib"
-import { API_URL } from "react-native-dotenv"
 
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
@@ -66,15 +64,12 @@ const App: Component<{}> = () => {
   return (
     <RootStoreProvider value={rootStore}>
       <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>
-        <UseFetchProvider baseUrl={API_URL} authorizationToken="">
-
-          <ToastProvider />
-          <RootNavigator
-            ref={navigationRef}
-            initialState={initialNavigationState}
-            onStateChange={onNavigationStateChange}
-          />
-        </UseFetchProvider>
+        <ToastProvider />
+        <RootNavigator
+          ref={navigationRef}
+          initialState={initialNavigationState}
+          onStateChange={onNavigationStateChange}
+        />
       </SafeAreaProvider>
     </RootStoreProvider>
   )

@@ -7,10 +7,12 @@ import { spacing } from "../../theme"
 import { useForm, FormContext } from "react-hook-form"
 import * as Yup from "yup"
 import { FormInput } from "../../components/formInput"
-import { useFetch } from "use-fetch-lib"
 import { isAngry } from "../../utils/apiHelpers"
 import { useStores } from "../../models"
 import { PRETTY_ERROR_MESSAGE } from "../../config/constanst"
+import Axios from "axios"
+
+const { API_URL } = require("../../config/env")
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -42,12 +44,9 @@ export const DemoScreen: Component = observer(function DemoScreen() {
   const { navigate } = useNavigation()
   const nextScreen = () => navigate("appStack")
 
-  const { appStateStore, userProfileStore } = useStores()
+  const [isLoading, setLoading] = React.useState(false)
 
-  const [{ data, status }, doLogin] = useFetch({
-    url: "",
-    method: "post",
-  })
+  const { appStateStore, userProfileStore } = useStores()
 
   useFocusEffect(
     React.useCallback(() => {
@@ -62,20 +61,32 @@ export const DemoScreen: Component = observer(function DemoScreen() {
     }, []),
   )
 
-  React.useEffect(() => {
-    if (status.isFulfilled) {
-      if (isAngry(data)) {
-        appStateStore.toast.setToast({ text: isAngry(data), styles: "angry" })
-      } else {
-        userProfileStore.setUserProfile(data)
-        appStateStore.setLoggedIn(true)
-        nextScreen()
-        appStateStore.toast.setToast({ text: "Login successfull!", styles: "success" })
-      }
-    } else if (status.isRejected) {
-      appStateStore.toast.setToast({ text: PRETTY_ERROR_MESSAGE, styles: "angry" })
-    }
-  }, [status])
+  const doLogin = formData => {
+    setLoading(true)
+
+    Axios.request({
+      url: "",
+      baseURL: API_URL,
+      data: formData,
+      method: "POST",
+    })
+      .then(({ data }) => {
+        if (isAngry(data)) {
+          appStateStore.toast.setToast({ text: isAngry(data), styles: "angry" })
+        } else {
+          userProfileStore.setUserProfile(data)
+          appStateStore.setLoggedIn(true)
+          nextScreen()
+          appStateStore.toast.setToast({ text: "Login successfull!", styles: "success" })
+        }
+        setLoading(false)
+      })
+      .catch(e => {
+        console.log("the error is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", e)
+        appStateStore.toast.setToast({ text: PRETTY_ERROR_MESSAGE, styles: "angry" })
+        setLoading(false)
+      })
+  }
 
   const onSubmit = data => {
     const formData = new FormData()
@@ -101,7 +112,7 @@ export const DemoScreen: Component = observer(function DemoScreen() {
           <FormContext {...methods}>
             <FormInput name="userId" label="User name" />
             <FormInput name="password" label="Password" secureTextEntry />
-            <Button onPress={methods.handleSubmit(onSubmit)} loading={status.isPending}>
+            <Button onPress={methods.handleSubmit(onSubmit)} loading={isLoading}>
               Get Started
             </Button>
           </FormContext>
