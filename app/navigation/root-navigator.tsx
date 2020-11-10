@@ -11,6 +11,7 @@ import { PrimaryNavigator } from "./primary-navigator"
 import { AppNavigator } from "./app-navigator"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../models"
+import CameraScreen from "../screens/CameraDemo"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -25,6 +26,7 @@ import { useStores } from "../models"
 export type RootParamList = {
   primaryStack: undefined
   appStack: undefined
+  cameraScreen: undefined
 }
 
 const Stack = createNativeStackNavigator<RootParamList>()
@@ -34,12 +36,14 @@ const RootStack = observer(() => {
 
   return (
     <Stack.Navigator
+      initialRouteName="cameraScreen"
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
         stackPresentation: "modal",
       }}
     >
+      <Stack.Screen name="cameraScreen" component={CameraScreen} />
       {!appStateStore.isLoggedIn && (
         <Stack.Screen
           name="primaryStack"
