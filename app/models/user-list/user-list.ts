@@ -7,7 +7,7 @@ const personModal = types.model("person", {
   sLabel: types.string,
   iPhotoId: types.string,
 
-  // optional feilds
+  // optional felids
   sImage: types.optional(types.string, ""),
   sCaption: types.optional(types.string, ""),
   sImage1: types.optional(types.string, ""),

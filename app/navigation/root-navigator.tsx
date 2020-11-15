@@ -43,7 +43,7 @@ const RootStack = observer(() => {
         stackPresentation: "modal",
       }}
     >
-      <Stack.Screen name="cameraScreen" component={CameraScreen} />
+      {/* <Stack.Screen name="cameraScreen" component={CameraScreen} /> */}
       {!appStateStore.isLoggedIn && (
         <Stack.Screen
           name="primaryStack"

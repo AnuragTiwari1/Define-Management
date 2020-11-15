@@ -34,31 +34,31 @@ const BODY: ViewStyle = {
 const getCleanList = (data): PersonModalSnapshot[] => {
   return Array.isArray(data)
     ? data.map(e => {
-      let user = {
-        sId: e.iTaskId,
-        sName: e.can_unique_id,
-        sLabel: e.name_candi,
-        iPhotoId: "0",
-        sStatus: "0",
-      }
-
-      if (data.taskcompleted) {
-        const photoObj = data.taskcompleted
-        const { type, type1, type2, type3, type4, ...rest } = photoObj
-        user = {
-          ...user,
-          ...rest,
-          sStatus: "1",
-          sAnnexure: type,
-          sAnnexure1: type1,
-          sAnnexure2: type2,
-          sAnnexure3: type3,
-          sAnnexure4: type4,
+        let user = {
+          sId: e.iTaskId,
+          sName: e.can_unique_id,
+          sLabel: e.name_candi,
+          iPhotoId: "0",
+          sStatus: "0",
         }
-      }
 
-      return user
-    })
+        if (data.taskcompleted) {
+          const photoObj = data.taskcompleted
+          const { type, type1, type2, type3, type4, ...rest } = photoObj
+          user = {
+            ...user,
+            ...rest,
+            sStatus: "1",
+            sAnnexure: type,
+            sAnnexure1: type1,
+            sAnnexure2: type2,
+            sAnnexure3: type3,
+            sAnnexure4: type4,
+          }
+        }
+
+        return user
+      })
     : []
 }
 
@@ -88,6 +88,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
       .then(({ data }) => {
         const userList = getCleanList(data)
         userListStore.setPeopleList(userList)
+        console.log("the users data are>>>>", userList, data)
         setLoading(false)
       })
       .catch(e => {
