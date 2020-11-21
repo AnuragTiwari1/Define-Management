@@ -12,6 +12,11 @@ export const DEFAULT_APPSTATE = {
     text: "",
     styles: "",
   },
+  location: {
+    latitude: null,
+    longitude: null,
+    address: null,
+  },
 }
 
 const toastModal = types
@@ -26,11 +31,26 @@ const toastModal = types
     },
   }))
 
+const locationModal = types
+  .model({
+    latitude: types.maybeNull(types.number),
+    longitude: types.maybeNull(types.number),
+    address: types.maybeNull(types.string),
+  })
+  .actions(self => ({
+    setLocation({ latitude, longitude, address }) {
+      self.latitude = latitude
+      self.longitude = longitude
+      self.address = address
+    },
+  }))
+
 export const AppStateModel = types
   .model("AppStateModel", {
     toast: types.optional(toastModal, DEFAULT_APPSTATE.toast),
     hasWelcomed: types.optional(types.boolean, false),
     isLoggedIn: types.optional(types.boolean, false),
+    location: types.optional(locationModal, DEFAULT_APPSTATE.location),
   })
   .props({})
   .views(self => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars

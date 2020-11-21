@@ -11,7 +11,6 @@ import { PrimaryNavigator } from "./primary-navigator"
 import { AppNavigator } from "./app-navigator"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../models"
-import CameraScreen from "../screens/CameraDemo"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -43,7 +42,6 @@ const RootStack = observer(() => {
         stackPresentation: "modal",
       }}
     >
-      {/* <Stack.Screen name="cameraScreen" component={CameraScreen} /> */}
       {!appStateStore.isLoggedIn && (
         <Stack.Screen
           name="primaryStack"

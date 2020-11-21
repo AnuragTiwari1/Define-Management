@@ -8,7 +8,9 @@ import React from "react"
 
 import { createNativeStackNavigator } from "react-native-screens/native-stack"
 import { UploadPhotoScreen, LandingScreen } from "../screens"
-
+import CameraScreen from "../screens/CameraDemo"
+import { GeolocationProvider } from "../providers/GeolocationProvider"
+import { View } from "react-native"
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
  * as well as what properties (if any) they might take when navigating to them.
@@ -24,6 +26,7 @@ import { UploadPhotoScreen, LandingScreen } from "../screens"
 export type PrimaryParamList = {
   landing: undefined
   uploadPhoto: undefined
+  cameraScreen: undefined
 }
 
 // Documentation: https://github.com/software-mansion/react-native-screens/tree/master/native-stack
@@ -31,15 +34,19 @@ const Stack = createNativeStackNavigator<PrimaryParamList>()
 
 export function AppNavigator() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        gestureEnabled: false,
-      }}
-    >
-      <Stack.Screen name="landing" component={LandingScreen} />
-      <Stack.Screen name="uploadPhoto" component={UploadPhotoScreen} />
-    </Stack.Navigator>
+    <View style={{ flex: 1 }}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      >
+        <Stack.Screen name="landing" component={LandingScreen} />
+        <Stack.Screen name="uploadPhoto" component={UploadPhotoScreen} />
+        <Stack.Screen name="cameraScreen" component={CameraScreen} mode="modal" />
+      </Stack.Navigator>
+      <GeolocationProvider />
+    </View>
   )
 }
 

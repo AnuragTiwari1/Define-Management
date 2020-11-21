@@ -182,6 +182,10 @@ android {
     }
 }
 
+apply plugin: 'com.android.application'
+
+apply plugin: 'com.google.gms.google-services'
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
@@ -192,6 +196,8 @@ dependencies {
     }
     implementation 'com.google.android.gms:play-services-base:17.2.1'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.firebase:firebase-analytics:17.3.0'
+    implementation platform('com.google.firebase:firebase-bom:26.1.0')
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

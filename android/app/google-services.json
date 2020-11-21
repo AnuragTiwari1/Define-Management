@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "68477874084",
+    "firebase_url": "https://definite-management-4b257.firebaseio.com",
+    "project_id": "definite-management-4b257",
+    "storage_bucket": "definite-management-4b257.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68477874084:android:c5164ba8627a833a161b31",
+        "android_client_info": {
+          "package_name": "com.dmi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "68477874084-g10g70me7l0ebr71012cfnf5fp26isv5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyWckg6aadwCI4Cf263jTMLNJDhJoR0AE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68477874084-g10g70me7l0ebr71012cfnf5fp26isv5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,6 +8,7 @@ import { color } from "../theme"
 import { PRETTY_ERROR_MESSAGE } from "../config/constanst"
 import Axios from "axios"
 import Icon from "react-native-vector-icons/AntDesign"
+import PushNotification from "react-native-push-notification"
 
 const { API_URL } = require("../config/env")
 
@@ -88,7 +89,6 @@ export const LandingScreen: Component = observer(function LandingScreen() {
       .then(({ data }) => {
         const userList = getCleanList(data)
         userListStore.setPeopleList(userList)
-        console.log("the users data are>>>>", userList, data)
         setLoading(false)
       })
       .catch(e => {
@@ -121,8 +121,21 @@ export const LandingScreen: Component = observer(function LandingScreen() {
               <TaskCard
                 {...item}
                 handlePress={() => {
-                  userListStore.setEditIndex(index)
-                  navigate("uploadPhoto")
+                  // userListStore.setEditIndex(index)
+                  // navigate("uploadPhoto")
+                  PushNotification.localNotification({
+                    autoCancel: true,
+                    bigText:
+                      "This is local notification demo in React Native app. Only shown, when expanded.",
+                    subText: "Local Notification Demo",
+                    title: "Local Notification Title",
+                    message: "Expand me to see more",
+                    vibrate: true,
+                    vibration: 300,
+                    playSound: true,
+                    soundName: "default",
+                    actions: '["Yes", "No"]',
+                  })
                 }}
               />
             )

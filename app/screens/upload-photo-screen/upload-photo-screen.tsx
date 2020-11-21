@@ -1,11 +1,12 @@
-import React, { FunctionComponent as Component } from "react"
+import React, { FunctionComponent as Component, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { ViewStyle, View, Image, Alert, TouchableOpacity } from "react-native"
 import { Screen, Text } from "../../components"
 import { color, spacing } from "../../theme"
-import { FormImagePicker } from "../../components/ImagePicker"
+import { FormImagePicker, File } from "../../components/ImagePicker"
 import { useNavigation } from "@react-navigation/native"
 import Modal from "react-native-modal"
+import { useStores } from "../../models"
 
 const TAB_BAR_HEIGHT = 80
 
@@ -81,50 +82,52 @@ const taskList = [
 export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen() {
   // const { someStore, anotherStore } = useStores()
   const navigation = useNavigation()
+  const [photos, setPhotos] = useState([null, null, null, null, null])
 
-  const [activeTab, setActiveTab] = React.useState(null as null | typeof taskList[number])
-  const hasUnsavedChanges = true
+  const [activeTab, setActiveTab] = React.useState(
+    null as null | (typeof taskList[number] & { index: number }),
+  )
+  const [hasUnsavedChanges, setIsUnSaved] = useState(false)
 
   const goToLanding = () => {
     navigation.navigate("landing")
   }
 
-  React.useEffect(
-    () =>
-      navigation.addListener("beforeRemove", e => {
-        if (!hasUnsavedChanges) {
-          // If we don't have unsaved changes, then we don't need to do anything
-          return
-        }
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", e => {
+      if (!hasUnsavedChanges) {
+        // If we don't have unsaved changes, then we don't need to do anything
+        return
+      }
 
-        // Prevent default behavior of leaving the screen
-        e.preventDefault()
+      // Prevent default behavior of leaving the screen
+      e.preventDefault()
 
-        // Prompt the user before leaving the screen
-        Alert.alert(
-          "Discard changes?",
-          "You have unsaved changes. Are you sure to discard them and leave the screen?",
-          [
-            { text: "Don't leave", style: "cancel", onPress: () => {} },
-            {
-              text: "Discard",
-              style: "destructive",
-              onPress: () => navigation.dispatch(e.data.action),
-            },
-          ],
-        )
-      }),
-    [navigation, hasUnsavedChanges],
-  )
+      // Prompt the user before leaving the screen
+      Alert.alert(
+        "Discard changes?",
+        "You have unsaved changes. Are you sure to discard them and leave the screen?",
+        [
+          { text: "Don't leave", style: "cancel", onPress: () => {} },
+          {
+            text: "Discard",
+            style: "destructive",
+            onPress: () => navigation.dispatch(e.data.action),
+          },
+        ],
+      )
+    })
+    return unsubscribe
+  }, [navigation, hasUnsavedChanges])
   return (
     <Screen style={ROOT} preset="fixed">
       <Text preset={["header", "center"]}>Upload Images</Text>
-      {taskList.map(e => {
+      {taskList.map((e, i) => {
         return (
           <TouchableOpacity
             style={TASK_ITEM_CONTAINER}
             key={e.task}
-            onPress={() => setActiveTab(e)}
+            onPress={() => setActiveTab({ ...e, index: i })}
           >
             <Text>{e.introHeading}</Text>
             <Image source={e.introImage} style={{ width: 55, height: 45 }} resizeMode="contain" />
@@ -134,11 +137,21 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
 
       <ScannerIntro
         isActive={Boolean(activeTab)}
+        index={activeTab?.index}
         introHeading={activeTab?.introHeading}
         introImage={activeTab?.introImage}
         introText={activeTab?.introText}
         onDismiss={() => setActiveTab(null)}
-        defaultImage={null}
+        defaultImage={photos[activeTab?.index || 0]}
+        reviveModal={(index, img) => {
+          setPhotos(prevPhotos => {
+            return prevPhotos.map((e, i) => {
+              return i === index ? img : e
+            })
+          })
+          setIsUnSaved(true)
+          setActiveTab({ ...taskList[index], index })
+        }}
       />
 
       <View style={TAB_BAR_CONTAINER}>
@@ -158,6 +171,9 @@ const ScannerIntro = ({
   introText,
   introHeading,
   defaultImage,
+  reviveModal,
+  index,
+  onDone,
 }) => {
   const [capturedImage, setCapturedImage] = React.useState(null)
 
@@ -177,9 +193,10 @@ const ScannerIntro = ({
             <Text preset={["small", "center", "muted"]}>{introText}</Text>
           </View>
           <FormImagePicker
-            handleCapture={img => {
-              setCapturedImage(img)
+            handleCapture={(img: File) => {
+              reviveModal(index, img)
             }}
+            preOpen={onDismiss}
             source={capturedImage}
             handleReject={console.log}
           />

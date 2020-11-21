@@ -1,10 +1,9 @@
 import React, { useState } from "react"
-import { Controller } from "react-hook-form"
 import { TouchableOpacity, View, Image } from "react-native"
-import ImagePickerLib from "react-native-image-picker"
 import { spacing, color } from "../theme"
 import Icon from "react-native-vector-icons/AntDesign"
 import { Text } from "./text/text"
+import { useNavigation } from "@react-navigation/native"
 
 export interface File {
   uri: string
@@ -63,28 +62,24 @@ const ImageHolder = ({ source }) => {
   )
 }
 
-export const FormImagePicker = ({ source, handleReject, handleCapture, maxSize = 1 }) => {
-  const handleImage = (selection: any) => {
-    // handle cancel
-    if (selection.didCancel) handleReject("Image selection canceled by user")
-    // handle error
-    else if (selection.error) handleReject(selection.error.message)
-    // handle image size errors
-    else if (selection.fileSize > maxSize * 1000 * 1000) {
-      handleReject(`Must be less than ${maxSize}MB`)
-    }
-    // set image
-    else {
-      handleCapture({
-        name: selection.fileName,
-        type: selection.type,
-        uri: selection.uri,
-      } as File)
-    }
+export const FormImagePicker = ({ source, handleReject, handleCapture, preOpen, maxSize = 1 }) => {
+  const { navigate } = useNavigation()
+
+  const handleImage = (uri: string) => {
+    const fileName = uri.substring(uri.lastIndexOf("/") + 1, uri.length)
+
+    const [fileNameWithoutExtn, fileType] = fileName.split(".")
+
+    handleCapture({
+      name: fileNameWithoutExtn,
+      type: fileType,
+      uri,
+    } as File)
   }
 
   const openPicker = () => {
-    ImagePickerLib.showImagePicker(imagePickerOptions, handleImage)
+    preOpen()
+    navigate("cameraScreen", { handleImage })
   }
 
   return (

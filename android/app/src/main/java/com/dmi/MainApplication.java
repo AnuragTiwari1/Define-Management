@@ -9,6 +9,14 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import android.location.LocationManager;
+import android.location.LocationListener;
+import android.location.Location;
+import com.dmi.services.LocationService;
+import android.content.Context;
+import android.os.Bundle;
+import android.content.Intent;
+import com.facebook.react.HeadlessJsTaskService;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 

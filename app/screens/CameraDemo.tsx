@@ -1,25 +1,36 @@
-import React, { PureComponent } from "react"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import React, { useRef } from "react"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { RNCamera } from "react-native-camera"
 import MapView from "react-native-maps"
 import { color } from "../theme"
+import { useStores } from "../models"
+import ViewShot from "react-native-view-shot"
+import { Text } from "../components"
+import { observer } from "mobx-react-lite"
 
-export default class CameraDemo extends PureComponent {
-  constructor(props) {
-    super(props)
+const CameraDemo = ({ route, navigation }) => {
+  const {
+    appStateStore: { location },
+  } = useStores()
 
-    this.state = {
-      btnWidth: 0,
-    }
+  const viewShotRef = useRef(null)
+
+  const onCapture = () => {
+    viewShotRef.current.capture().then(uri => {
+      route.params.handleImage(uri)
+      navigation.goBack()
+    })
   }
-  render() {
-    console.log("the btn width >> ", this.state.btnWidth)
-    return (
-      <View style={styles.container}>
+
+  return (
+    <View style={styles.container}>
+      <ViewShot
+        style={{ flex: 1 }}
+        ref={element => {
+          viewShotRef.current = element
+        }}
+      >
         <RNCamera
-          ref={ref => {
-            this.camera = ref
-          }}
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
           flashMode={RNCamera.Constants.FlashMode.on}
@@ -35,57 +46,43 @@ export default class CameraDemo extends PureComponent {
             buttonPositive: "Ok",
             buttonNegative: "Cancel",
           }}
-          onGoogleVisionBarcodesDetected={({ barcodes }) => {
-            console.log(barcodes)
-          }}
+          onGoogleVisionBarcodesDetected={({ barcodes }) => {}}
         />
-        <View
-          style={styles.infoContainer}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <View style={{ flex: 2 }}>
-            <Text>Maps will appear here</Text>
-          </View>
-          <View style={{ flex: 3 }}>
-            <Text>Address will appear here</Text>
+        <View style={styles.infoContainer}>
+          <MapView
+            initialRegion={{
+              latitude: location?.latitude || 0,
+              longitude: location?.longitude || 0,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            style={{ flex: 1 }}
+          />
+          <View style={{ flex: 1, borderLeftWidth: 1, borderStyle: "dashed" }}>
+            <Text preset={["center", "small"]}>{location?.address}</Text>
           </View>
         </View>
-        <View
-          onLayout={event => {
-            this.setState({ btnWidth: event.nativeEvent.layout.width })
-          }}
-          style={{
-            flex: 0,
-            flexDirection: "row",
-            justifyContent: "center",
-            position: "absolute",
-            // bottom: 10,
-            top: 10,
-            left: "50%",
-            transform: [{ translateX: -(this.state.btnWidth / 2) }],
-          }}
-        >
-          <TouchableOpacity onPress={this.takePicture.bind(this)} style={styles.capture}>
-            <Text style={{ fontSize: 18, color: color.primary, fontWeight: "bold" }}>Capture</Text>
-          </TouchableOpacity>
-        </View>
+      </ViewShot>
+      <View
+        style={{
+          flex: 0,
+          flexDirection: "row",
+          justifyContent: "center",
+          position: "absolute",
+          bottom: 10,
+          left: 0,
+          right: 0,
+        }}
+      >
+        <TouchableOpacity onPress={() => onCapture()} style={styles.capture}>
+          <Text style={{ fontSize: 18, color: color.primary, fontWeight: "bold" }}>Capture</Text>
+        </TouchableOpacity>
       </View>
-    )
-  }
-
-  takePicture = async () => {
-    if (this.camera) {
-      const options = { quality: 0.5, base64: true }
-      const data = await this.camera.takePictureAsync(options)
-      console.log(data.uri)
-    }
-  }
+    </View>
+  )
 }
+
+export default observer(CameraDemo)
 
 const styles = StyleSheet.create({
   capture: {
@@ -109,7 +106,6 @@ const styles = StyleSheet.create({
   infoContainer: {
     display: "flex",
     flexDirection: "row",
-    height: "25%",
-    backgroundColor: "red",
+    height: "15%",
   },
 })
