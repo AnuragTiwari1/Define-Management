@@ -9,6 +9,7 @@ import React from "react"
 import { createNativeStackNavigator } from "react-native-screens/native-stack"
 import { UploadPhotoScreen, LandingScreen } from "../screens"
 import CameraScreen from "../screens/CameraDemo"
+import SettingScreen from "../screens/SettingsScreen"
 import { GeolocationProvider } from "../providers/GeolocationProvider"
 import { View } from "react-native"
 /**
@@ -27,6 +28,7 @@ export type PrimaryParamList = {
   landing: undefined
   uploadPhoto: undefined
   cameraScreen: undefined
+  settingScreen: undefined
 }
 
 // Documentation: https://github.com/software-mansion/react-native-screens/tree/master/native-stack
@@ -43,7 +45,8 @@ export function AppNavigator() {
       >
         <Stack.Screen name="landing" component={LandingScreen} />
         <Stack.Screen name="uploadPhoto" component={UploadPhotoScreen} />
-        <Stack.Screen name="cameraScreen" component={CameraScreen} mode="modal" />
+        <Stack.Screen name="cameraScreen" component={CameraScreen} />
+        <Stack.Screen name="settingScreen" component={SettingScreen} />
       </Stack.Navigator>
       <GeolocationProvider />
     </View>

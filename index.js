@@ -10,6 +10,11 @@
 import App from "./app/app.tsx"
 import { AppRegistry } from "react-native"
 import PushNotification from "react-native-push-notification"
+import { LOCATION_STORAGE_KEY, DISTANCE_TRAVELLED } from "./app/config/constanst"
+import Geolocation from "@react-native-community/geolocation"
+import BackgroundJob from "react-native-background-job"
+import { load, save } from "./app/utils/storage"
+import geodist from "geodist"
 
 PushNotification.configure({
   // (required) Called when a remote is received or opened, or local notification is opened
@@ -35,6 +40,56 @@ PushNotification.configure({
   requestPermissions: true,
 })
 
+const backgroundJob = {
+  jobKey: "myJob",
+  job: async () => {
+    const locationObj = await load(LOCATION_STORAGE_KEY)
+    const prevDistance = await load(DISTANCE_TRAVELLED)
+
+    Geolocation.getCurrentPosition(
+      position => {
+        const currentLongitude = Number(position.coords.longitude)
+
+        const currentLatitude = Number(position.coords.latitude)
+
+        if (locationObj?.lat && locationObj?.lon) {
+          const displacement = geodist(
+            locationObj,
+            { lat: currentLatitude, lon: currentLongitude },
+            { unit: "km" },
+          )
+
+          const totalDistance = Number(prevDistance || 0) + displacement
+
+          save(DISTANCE_TRAVELLED, totalDistance)
+
+          PushNotification.localNotification({
+            autoCancel: true,
+            bigText: `the distance moved is>>> ${totalDistance}. The new Coordinates are >>> ${currentLatitude},${currentLongitude}.`,
+            subText: "Local Notification Demo",
+            title: "Local Notification Title",
+            message: "Expand me to see more",
+            vibrate: true,
+            vibration: 300,
+            playSound: true,
+            soundName: "default",
+          })
+        }
+        save(LOCATION_STORAGE_KEY, {
+          lat: currentLatitude,
+          lon: currentLongitude,
+        })
+      },
+      () => {},
+      {
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 1000,
+      },
+    )
+  },
+}
+
 /**
  * This needs to match what's found in your app_delegate.m and MainActivity.java.
  */
@@ -52,11 +107,6 @@ if (__DEV__ && SHOW_STORYBOOK) {
   RootComponent = StorybookUIRoot
 }
 
-AppRegistry.registerComponent(APP_NAME, () => RootComponent)
+BackgroundJob.register(backgroundJob)
 
-const LogLocation = async data => {
-  navigator.geolocation.getCurrentPosition(position => {
-    console.log(position.coords)
-  })
-}
-AppRegistry.registerHeadlessTask("LogLocation", () => LogLocation)
+AppRegistry.registerComponent(APP_NAME, () => RootComponent)

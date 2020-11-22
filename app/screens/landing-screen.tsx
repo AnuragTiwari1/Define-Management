@@ -2,13 +2,13 @@ import React, { FunctionComponent as Component } from "react"
 import { observer } from "mobx-react-lite"
 import { ViewStyle, View, Image, FlatList, StatusBar, TouchableOpacity } from "react-native"
 import { Screen, Text } from "../components"
-import { useNavigation } from "@react-navigation/native"
-import { useStores, PersonModalSnapshot, UserListModel } from "../models"
+import { useStores, PersonModalSnapshot } from "../models"
 import { color } from "../theme"
-import { PRETTY_ERROR_MESSAGE } from "../config/constanst"
+import { PRETTY_ERROR_MESSAGE, LOCATION_STORAGE_KEY, DISTANCE_TRAVELLED } from "../config/constanst"
 import Axios from "axios"
 import Icon from "react-native-vector-icons/AntDesign"
-import PushNotification from "react-native-push-notification"
+import { load } from "../utils/storage"
+import { useNavigation } from "@react-navigation/native"
 
 const { API_URL } = require("../config/env")
 
@@ -69,6 +69,17 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   const [isLoading, setLoading] = React.useState(false)
   const { navigate } = useNavigation()
 
+  const [location, setLocation] = React.useState({ lat: undefined, lon: undefined, dist: 0 })
+
+  React.useEffect(() => {
+    ;(async function loadStorage() {
+      const locationObj = await load(LOCATION_STORAGE_KEY)
+      const prevDistance = await load(DISTANCE_TRAVELLED)
+
+      setLocation({ dist: prevDistance, ...locationObj })
+    })()
+  }, [])
+
   React.useEffect(() => {
     fetchList()
   }, [])
@@ -91,7 +102,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
         userListStore.setPeopleList(userList)
         setLoading(false)
       })
-      .catch(e => {
+      .catch(() => {
         appStateStore.toast.setToast({ text: PRETTY_ERROR_MESSAGE, styles: "angry" })
         setLoading(false)
       })
@@ -116,26 +127,13 @@ export const LandingScreen: Component = observer(function LandingScreen() {
       <View style={BODY}>
         <FlatList
           data={userListStore.peoplelist}
-          renderItem={({ item, index }) => {
+          renderItem={({ item }) => {
             return (
               <TaskCard
                 {...item}
                 handlePress={() => {
-                  // userListStore.setEditIndex(index)
-                  // navigate("uploadPhoto")
-                  PushNotification.localNotification({
-                    autoCancel: true,
-                    bigText:
-                      "This is local notification demo in React Native app. Only shown, when expanded.",
-                    subText: "Local Notification Demo",
-                    title: "Local Notification Title",
-                    message: "Expand me to see more",
-                    vibrate: true,
-                    vibration: 300,
-                    playSound: true,
-                    soundName: "default",
-                    actions: '["Yes", "No"]',
-                  })
+                  userListStore.setEditIndex(index)
+                  navigate("uploadPhoto")
                 }}
               />
             )
@@ -149,7 +147,12 @@ export const LandingScreen: Component = observer(function LandingScreen() {
               </Text>
             </View>
           }
+          keyExtractor={(item, index) => `${index}`}
         />
+      </View>
+
+      <View style={{ top: 0, right: 10, position: "absolute" }}>
+        <Icon name="setting" size={24} color="white" onPress={() => navigate("settingScreen")} />
       </View>
     </Screen>
   )
