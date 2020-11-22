@@ -46,9 +46,6 @@ export const DemoScreen: Component = observer(function DemoScreen() {
 
   const [isLoading, setLoading] = React.useState(false)
 
-  //Delete this when done
-  nextScreen()
-
   const { appStateStore, userProfileStore } = useStores()
 
   useFocusEffect(
