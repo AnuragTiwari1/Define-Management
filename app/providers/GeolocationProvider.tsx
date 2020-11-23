@@ -64,7 +64,7 @@ export const GeolocationProvider = observer(() => {
       },
       error => {},
       {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         timeout: 30000,
         maximumAge: 1000,
       },
@@ -84,7 +84,7 @@ export const GeolocationProvider = observer(() => {
       },
       error => {},
       {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         maximumAge: 1000,
       },
     )

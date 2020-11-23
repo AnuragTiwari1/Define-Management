@@ -2,23 +2,32 @@ import React from "react"
 import { Screen, Text, Button } from "../components"
 import { Switch, TextInput } from "react-native-paper"
 import { View, ToastAndroid } from "react-native"
-import { load, loadString, saveString } from "../utils/storage"
+import { load, loadString, saveString, save } from "../utils/storage"
 import { AGENT_NAME } from "../config/constanst"
 import { useNavigation } from "@react-navigation/native"
 import BackgroundJob from "react-native-background-job"
+import { useStores } from "../models"
+import Axios from "axios"
+import { isAngry } from "../utils/apiHelpers"
+
+const { API_URL } = require("../config/env")
 
 export default function SettingScreen() {
   const [agentOptIn, setAgentOptIn] = React.useState(false)
   const [agentName, setAgentName] = React.useState("")
+  const [isLoading, setLoading] = React.useState(false)
 
   const { navigate } = useNavigation()
+  const {
+    userProfileStore: { iUserId },
+  } = useStores()
 
   React.useEffect(() => {
     ;(async function loader() {
-      const agentName = await loadString(AGENT_NAME)
-      if (agentName) {
+      const agent = await load(AGENT_NAME)
+      if (agent && agent?.agentName) {
         setAgentOptIn(true)
-        setAgentName(agentName)
+        setAgentName(agent.agentName)
       }
     })()
   }, [])
@@ -49,28 +58,60 @@ export default function SettingScreen() {
         </View>
       </View>
       <Button
+        loading={isLoading}
+        disabled={isLoading}
         onPress={async () => {
           if (agentOptIn) {
             if (agentName) {
-              ToastAndroid.showWithGravity(
-                "You have successfully opted in for agent workflow",
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-              )
-
-              await saveString(AGENT_NAME, agentName)
-
-              const backgroundSchedule = {
-                jobKey: "myJob",
-                allowExecutionInForeground: true,
-              }
-
-              BackgroundJob.schedule(backgroundSchedule)
-                .then(() => {
-                  console.log("job is scheduled successfully")
-                  navigate("landing")
+              try {
+                const formData = new FormData()
+                formData.append("action", "registerForAgent")
+                formData.append("userid", iUserId)
+                formData.append("name", agentName)
+                setLoading(true)
+                const { data } = await Axios.request({
+                  url: "",
+                  baseURL: API_URL,
+                  data: formData,
+                  method: "POST",
                 })
-                .catch(err => console.err(err))
+
+                if (isAngry(data)) {
+                  ToastAndroid.showWithGravity(
+                    "Registering Failed. Try Again or contact admin",
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                  )
+                  setLoading(false)
+                } else {
+                  ToastAndroid.showWithGravity(
+                    "You have successfully opted in for agent workflow",
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                  )
+
+                  await save(AGENT_NAME, { agentName, iUserId })
+                  setLoading(false)
+
+                  const backgroundSchedule = {
+                    jobKey: "myJob",
+                    allowExecutionInForeground: true,
+                  }
+
+                  BackgroundJob.schedule(backgroundSchedule)
+                    .then(() => {
+                      console.log("job is scheduled successfully")
+                      navigate("landing")
+                    })
+                    .catch(err => console.err(err))
+                }
+              } catch (error) {
+                ToastAndroid.showWithGravity(
+                  "Registering Failed. Try Again or contact admin",
+                  ToastAndroid.LONG,
+                  ToastAndroid.BOTTOM,
+                )
+              }
             } else {
               ToastAndroid.showWithGravity(
                 "Username is required",

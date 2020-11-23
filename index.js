@@ -82,7 +82,7 @@ const backgroundJob = {
       },
       () => {},
       {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         timeout: 30000,
         maximumAge: 1000,
       },

@@ -1,7 +1,7 @@
 import React, { useRef } from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { RNCamera } from "react-native-camera"
-import MapView from "react-native-maps"
+import MapView, { Marker } from "react-native-maps"
 import { color } from "../theme"
 import { useStores } from "../models"
 import ViewShot from "react-native-view-shot"
@@ -21,6 +21,13 @@ const CameraDemo = ({ route, navigation }) => {
       navigation.goBack()
     })
   }
+
+  const [region, setRegion] = React.useState({
+    latitude: location?.latitude || 0,
+    longitude: location?.longitude || 0,
+    latitudeDelta: 0.0023,
+    longitudeDelta: 0.00442,
+  })
 
   return (
     <View style={styles.container}>
@@ -49,15 +56,16 @@ const CameraDemo = ({ route, navigation }) => {
           onGoogleVisionBarcodesDetected={({ barcodes }) => {}}
         />
         <View style={styles.infoContainer}>
-          <MapView
-            initialRegion={{
-              latitude: location?.latitude || 0,
-              longitude: location?.longitude || 0,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-            style={{ flex: 1 }}
-          />
+          <MapView initialRegion={region} onRegionChange={setRegion} style={{ flex: 1 }}>
+            <Marker
+              coordinate={{
+                latitude: location?.latitude,
+                longitude: location?.longitude,
+              }}
+              title={""}
+              description={""}
+            ></Marker>
+          </MapView>
           <View style={{ flex: 1, borderLeftWidth: 1, borderStyle: "dashed" }}>
             <Text preset={["center", "small"]}>{location?.address}</Text>
           </View>

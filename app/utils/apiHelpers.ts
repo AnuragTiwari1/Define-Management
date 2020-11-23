@@ -1,1 +1,1 @@
-export const isAngry = (data) => data.err
+export const isAngry = data => data.err || !data

@@ -127,7 +127,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
       <View style={BODY}>
         <FlatList
           data={userListStore.peoplelist}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             return (
               <TaskCard
                 {...item}
