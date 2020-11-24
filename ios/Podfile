@@ -1,8 +1,8 @@
 platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-target 'DMI' do
-  # Pods for DMI
+target 'dmiAdmin' do
+  # Pods for dmiAdmin
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
@@ -34,7 +34,7 @@ target 'DMI' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  target 'DMITests' do
+  target 'dmiAdminTests' do
     inherit! :search_paths
     # Pods for testing
   end
@@ -42,10 +42,10 @@ target 'DMI' do
   use_native_modules!
 end
 
-target 'DMI-tvOS' do
-  # Pods for DMI-tvOS
+target 'dmiAdmin-tvOS' do
+  # Pods for dmiAdmin-tvOS
 
-  target 'DMI-tvOSTests' do
+  target 'dmiAdmin-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

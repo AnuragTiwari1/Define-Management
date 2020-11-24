@@ -1,4 +1,4 @@
-package com.dmi;
+package com.dmiadminadmin;
 
 import android.app.Application;
 import android.content.Context;
