@@ -10,11 +10,14 @@
 import App from "./app/app.tsx"
 import { AppRegistry } from "react-native"
 import PushNotification from "react-native-push-notification"
-import { LOCATION_STORAGE_KEY, DISTANCE_TRAVELLED } from "./app/config/constanst"
+import { LOCATION_STORAGE_KEY, DISTANCE_TRAVELLED, AGENT_NAME } from "./app/config/constanst"
 import Geolocation from "@react-native-community/geolocation"
 import BackgroundJob from "react-native-background-job"
 import { load, save } from "./app/utils/storage"
 import geodist from "geodist"
+import Axios from "axios"
+
+const { API_URL } = require("./app/config/env")
 
 PushNotification.configure({
   // (required) Called when a remote is received or opened, or local notification is opened
@@ -45,6 +48,8 @@ const backgroundJob = {
   job: async () => {
     const locationObj = await load(LOCATION_STORAGE_KEY)
     const prevDistance = await load(DISTANCE_TRAVELLED)
+    const agentInfo = await load(AGENT_NAME)
+    const formData = new FormData()
 
     Geolocation.getCurrentPosition(
       position => {
@@ -74,11 +79,26 @@ const backgroundJob = {
             playSound: true,
             soundName: "default",
           })
+
+          formData.append("action", "uploadLocation")
+          formData.append("userid", agentInfo.iUserId)
+          formData.append("latitude", currentLatitude)
+          formData.append("longitude", currentLongitude)
+          formData.append("distance", totalDistance)
         }
         save(LOCATION_STORAGE_KEY, {
           lat: currentLatitude,
           lon: currentLongitude,
         })
+
+        Axios.request({
+          url: "",
+          baseURL: API_URL,
+          data: formData,
+          method: "POST",
+        })
+          .then(({ data }) => {})
+          .catch(() => {})
       },
       () => {},
       {

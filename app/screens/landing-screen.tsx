@@ -163,10 +163,6 @@ const TaskCard = ({ sLabel, sName, sStatus, handlePress }) => {
   return (
     <TouchableOpacity
       style={{
-        flexDirection: "row",
-        padding: "5%",
-        margin: 10,
-        alignItems: "center",
         paddingRight: "10%",
         shadowColor: "#000",
         shadowOffset: {
@@ -177,21 +173,31 @@ const TaskCard = ({ sLabel, sName, sStatus, handlePress }) => {
         shadowRadius: 3.84,
         elevation: 2,
         borderRadius: 5,
-        justifyContent: "space-between",
+        margin: 10,
       }}
       onPress={handlePress}
     >
-      <View>
-        <Text>{sName}</Text>
-        <Text preset={["bold"]} style={{ fontSize: 32 }}>
-          {sLabel}
-        </Text>
+      <View
+        pointerEvents="none"
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: "5%",
+          alignItems: "center",
+        }}
+      >
+        <View>
+          <Text>{sName}</Text>
+          <Text preset={["bold"]} style={{ fontSize: 32 }}>
+            {sLabel}
+          </Text>
+        </View>
+        <Icon
+          name={isCompleted ? "checkcircle" : "checkcircleo"}
+          size={36}
+          color={isCompleted ? "green" : "black"}
+        />
       </View>
-      <Icon
-        name={isCompleted ? "checkcircle" : "checkcircleo"}
-        size={36}
-        color={isCompleted ? "green" : "black"}
-      />
     </TouchableOpacity>
   )
 }

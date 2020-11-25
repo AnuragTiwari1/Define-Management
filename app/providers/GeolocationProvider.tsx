@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useStores } from "../models/root-store/root-store-context"
 import { observer } from "mobx-react-lite"
-import { Platform, PermissionsAndroid } from "react-native"
+import { PermissionsAndroid } from "react-native"
 import Geolocation from "@react-native-community/geolocation"
 import Geocoder from "react-native-geocoder"
+
 
 export const GeolocationProvider = observer(() => {
   const { appStateStore } = useStores()
@@ -62,7 +63,7 @@ export const GeolocationProvider = observer(() => {
 
         setCurrentLatitude(currentLatitude)
       },
-      error => {},
+      () => {},
       {
         enableHighAccuracy: true,
         timeout: 30000,
@@ -82,7 +83,7 @@ export const GeolocationProvider = observer(() => {
 
         setCurrentLatitude(currentLatitude)
       },
-      error => {},
+      () => {},
       {
         enableHighAccuracy: true,
         maximumAge: 1000,

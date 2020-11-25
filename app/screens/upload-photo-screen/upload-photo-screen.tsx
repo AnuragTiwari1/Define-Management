@@ -1,12 +1,16 @@
 import React, { FunctionComponent as Component, useState } from "react"
 import { observer } from "mobx-react-lite"
-import { ViewStyle, View, Image, Alert, TouchableOpacity } from "react-native"
+import { ViewStyle, View, Image, Alert, TouchableOpacity, ToastAndroid } from "react-native"
 import { Screen, Text } from "../../components"
 import { color, spacing } from "../../theme"
 import { FormImagePicker, File } from "../../components/ImagePicker"
 import { useNavigation } from "@react-navigation/native"
 import Modal from "react-native-modal"
 import { useStores } from "../../models"
+import Axios from "axios"
+import { isAngry } from "../../utils/apiHelpers"
+
+const { API_URL } = require("../../config/env")
 
 const TAB_BAR_HEIGHT = 80
 
@@ -80,9 +84,14 @@ const taskList = [
 ]
 
 export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen() {
-  // const { someStore, anotherStore } = useStores()
+  const {
+    appStateStore,
+    userProfileStore,
+    userListStore: { peoplelist, activeIndex },
+  } = useStores()
   const navigation = useNavigation()
   const [photos, setPhotos] = useState([null, null, null, null, null])
+  const [loading, setLoading] = React.useState(false)
 
   const [activeTab, setActiveTab] = React.useState(
     null as null | (typeof taskList[number] & { index: number }),
@@ -124,13 +133,11 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
       <Text preset={["header", "center"]}>Upload Images</Text>
       {taskList.map((e, i) => {
         return (
-          <TouchableOpacity
-            style={TASK_ITEM_CONTAINER}
-            key={e.task}
-            onPress={() => setActiveTab({ ...e, index: i })}
-          >
-            <Text>{e.introHeading}</Text>
-            <Image source={e.introImage} style={{ width: 55, height: 45 }} resizeMode="contain" />
+          <TouchableOpacity key={e.task} onPress={() => setActiveTab({ ...e, index: i })}>
+            <View style={TASK_ITEM_CONTAINER} pointerEvents="none">
+              <Text>{e.introHeading}</Text>
+              <Image source={e.introImage} style={{ width: 55, height: 45 }} resizeMode="contain" />
+            </View>
           </TouchableOpacity>
         )
       })}
@@ -158,7 +165,79 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
         <Text preset={["bold", "angry", "large"]} onPress={goToLanding}>
           Cancel
         </Text>
-        <Text preset={["bold", "primary", "large"]}>Upload</Text>
+        <Text
+          onPress={() => {
+            if (!loading) {
+              const formData = new FormData()
+              formData.append("action", "uploadPhoto")
+              formData.append("lat", appStateStore.location.latitude)
+              formData.append("lon", appStateStore.location.longitude)
+              formData.append("address", appStateStore.location.address)
+              formData.append("userid", userProfileStore.iUserId)
+              formData.append("taskid", peoplelist[activeIndex].iTaskId)
+              formData.append("photoid", peoplelist[activeIndex].iPhotoId)
+
+              formData.append("annexure", "")
+              formData.append("annexure1", "")
+              formData.append("annexure2", "")
+              formData.append("annexure3", "")
+              formData.append("annexure4", "")
+
+              formData.append("caption", "")
+              formData.append("caption1", "")
+              formData.append("caption2", "")
+              formData.append("caption3", "")
+              formData.append("caption4", "")
+
+              formData.append("uploadimage", photos[0])
+              formData.append("uploadimage1", photos[1])
+              formData.append("uploadimage2", photos[2])
+              formData.append("uploadimage3", photos[3])
+              formData.append("uploadimage4", photos[4])
+
+              setLoading(true)
+
+              setIsUnSaved(false)
+              Axios.request({
+                baseURL: API_URL,
+                url: "",
+                method: "post",
+                data: formData,
+                headers: {
+                  "content-type": "multipart/form-data",
+                },
+              })
+                .then(({ data }) => {
+                  console.log("the photss are uploaded", data)
+                  if (!isAngry(data)) {
+                    ToastAndroid.showWithGravity(
+                      "Photos uploaded successfully",
+                      ToastAndroid.LONG,
+                      ToastAndroid.BOTTOM,
+                    )
+                    setLoading(false)
+
+                    goToLanding()
+                  } else {
+                    setLoading(false)
+
+                    ToastAndroid.showWithGravity(
+                      "Photos upload failed",
+                      ToastAndroid.LONG,
+                      ToastAndroid.BOTTOM,
+                    )
+                  }
+                })
+                .catch(e => {
+                  setLoading(false)
+                  console.log(e)
+                })
+            }
+          }}
+          preset={["bold", "primary", "large"]}
+        >
+          {loading ? "Uploading" : "Upload"}
+        </Text>
       </View>
     </Screen>
   )

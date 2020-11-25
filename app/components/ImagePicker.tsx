@@ -47,7 +47,7 @@ const imagePickerOptions = {
 
 const ImageHolder = ({ source }) => {
   return (
-    <View style={{ alignContent: "center", alignItems: "center" }}>
+    <View style={{ alignContent: "center", alignItems: "center" }} pointerEvents="none">
       <View
         style={{
           borderWidth: 1,
@@ -71,8 +71,8 @@ export const FormImagePicker = ({ source, handleReject, handleCapture, preOpen, 
     const [fileNameWithoutExtn, fileType] = fileName.split(".")
 
     handleCapture({
-      name: fileNameWithoutExtn,
-      type: fileType,
+      name: fileName,
+      type: `image/${fileType}`,
       uri,
     } as File)
   }

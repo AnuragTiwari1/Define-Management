@@ -83,7 +83,9 @@ const CameraDemo = ({ route, navigation }) => {
         }}
       >
         <TouchableOpacity onPress={() => onCapture()} style={styles.capture}>
-          <Text style={{ fontSize: 18, color: color.primary, fontWeight: "bold" }}>Capture</Text>
+          <View pointerEvents="none">
+            <Text style={{ fontSize: 18, color: color.primary, fontWeight: "bold" }}>Capture</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
