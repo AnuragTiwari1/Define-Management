@@ -7,10 +7,8 @@
 import React from "react"
 import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native"
 import { createNativeStackNavigator } from "react-native-screens/native-stack"
-import { PrimaryNavigator } from "./primary-navigator"
-import { AppNavigator } from "./app-navigator"
 import { observer } from "mobx-react-lite"
-import { useStores } from "../models"
+import { LandingScreen } from "../screens"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -23,33 +21,20 @@ import { useStores } from "../models"
  *   https://reactnavigation.org/docs/typescript#type-checking-the-navigator
  */
 export type RootParamList = {
-  primaryStack: undefined
-  appStack: undefined
+  landing: undefined
 }
 
 const Stack = createNativeStackNavigator<RootParamList>()
 
 const RootStack = observer(() => {
-  const { appStateStore } = useStores()
-
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
-        stackPresentation: "modal",
       }}
     >
-      {!appStateStore.isLoggedIn && (
-        <Stack.Screen
-          name="primaryStack"
-          component={PrimaryNavigator}
-          options={{
-            headerShown: false,
-          }}
-        />
-      )}
-      <Stack.Screen name="appStack" component={AppNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="landing" component={LandingScreen} />
     </Stack.Navigator>
   )
 })

@@ -1,1 +1,3 @@
-module.exports = __DEV__ ? require("./env.dev") : require("./env.prod")
+module.exports = {
+  API_URL: "http://definitemanagementsindia.com/dmspdf/WebServicetest.php",
+}
