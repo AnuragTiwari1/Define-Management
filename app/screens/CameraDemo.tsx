@@ -59,8 +59,8 @@ const CameraDemo = ({ route, navigation }) => {
           <MapView initialRegion={region} onRegionChange={setRegion} style={{ flex: 1 }}>
             <Marker
               coordinate={{
-                latitude: location?.latitude,
-                longitude: location?.longitude,
+                latitude: location?.latitude || 0,
+                longitude: location?.longitude || 0,
               }}
               title={""}
               description={""}

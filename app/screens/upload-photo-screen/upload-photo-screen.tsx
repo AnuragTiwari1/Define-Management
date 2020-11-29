@@ -157,7 +157,7 @@ export const UploadPhotoScreen: Component = observer(function UploadPhotoScreen(
             })
           })
           setIsUnSaved(true)
-          setActiveTab({ ...taskList[index], index })
+          appStateStore.toast.setToast({ text: "Photo captured successfully", styles: "success" })
         }}
       />
 
