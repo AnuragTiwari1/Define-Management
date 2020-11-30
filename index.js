@@ -16,6 +16,7 @@ import BackgroundJob from "react-native-background-job"
 import { load, save } from "./app/utils/storage"
 import geodist from "geodist"
 import Axios from "axios"
+import moment from "moment"
 
 const { API_URL } = require("./app/config/env")
 
@@ -46,8 +47,10 @@ PushNotification.configure({
 const backgroundJob = {
   jobKey: "myJob",
   job: async () => {
+    const currentDateString = moment().format("YYYY-MM-DD")
     const locationObj = await load(LOCATION_STORAGE_KEY)
     const prevDistance = await load(DISTANCE_TRAVELLED)
+    const prevDateString = locationObj?.date1 || currentDateString
     const agentInfo = await load(AGENT_NAME)
     const formData = new FormData()
 
@@ -66,8 +69,6 @@ const backgroundJob = {
 
           const totalDistance = Number(prevDistance || 0) + displacement
 
-          save(DISTANCE_TRAVELLED, totalDistance)
-
           PushNotification.localNotification({
             autoCancel: true,
             bigText: `the distance moved is>>> ${totalDistance}. The new Coordinates are >>> ${currentLatitude},${currentLongitude}.`,
@@ -85,11 +86,19 @@ const backgroundJob = {
           formData.append("latitude", currentLatitude)
           formData.append("longitude", currentLongitude)
           formData.append("distance", totalDistance)
+          formData.append("date1", currentDateString)
         }
         save(LOCATION_STORAGE_KEY, {
           lat: currentLatitude,
           lon: currentLongitude,
+          date1: currentDateString,
         })
+
+        if (currentDateString === prevDateString) {
+          save(DISTANCE_TRAVELLED, totalDistance)
+        } else {
+          save(DISTANCE_TRAVELLED, 0)
+        }
 
         Axios.request({
           url: "",
@@ -98,7 +107,9 @@ const backgroundJob = {
           method: "POST",
         })
           .then(({ data }) => {})
-          .catch(() => {})
+          .catch(() => {
+            save(DISTANCE_TRAVELLED, totalDistance)
+          })
       },
       () => {},
       {

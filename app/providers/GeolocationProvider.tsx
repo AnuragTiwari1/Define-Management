@@ -5,7 +5,6 @@ import { PermissionsAndroid } from "react-native"
 import Geolocation from "@react-native-community/geolocation"
 import Geocoder from "react-native-geocoder"
 
-
 export const GeolocationProvider = observer(() => {
   const { appStateStore } = useStores()
   let watchID: number

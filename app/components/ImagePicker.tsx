@@ -36,15 +36,6 @@ const getSource = source => {
   )
 }
 
-const imagePickerOptions = {
-  title: "Select Avatar",
-  storageOptions: {
-    skipBackup: true,
-    path: "images",
-  },
-  rotation: 0,
-}
-
 const ImageHolder = ({ source }) => {
   return (
     <View style={{ alignContent: "center", alignItems: "center" }} pointerEvents="none">
@@ -62,7 +53,14 @@ const ImageHolder = ({ source }) => {
   )
 }
 
-export const FormImagePicker = ({ source, handleReject, handleCapture, preOpen, maxSize = 1 }) => {
+export const FormImagePicker = ({
+  source,
+  handleReject,
+  handleCapture,
+  preOpen,
+  maxSize = 1,
+  noLocation = false,
+}) => {
   const { navigate } = useNavigation()
 
   const handleImage = (uri: string) => {
@@ -79,7 +77,7 @@ export const FormImagePicker = ({ source, handleReject, handleCapture, preOpen, 
 
   const openPicker = () => {
     preOpen()
-    navigate("cameraScreen", { handleImage })
+    navigate("cameraScreen", { handleImage, noLocation })
   }
 
   return (

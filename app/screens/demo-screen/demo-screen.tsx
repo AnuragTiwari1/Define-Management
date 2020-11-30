@@ -95,6 +95,7 @@ export const DemoScreen: Component = observer(function DemoScreen() {
     formData.append("password", data.password)
 
     doLogin(formData)
+    // nextScreen()
   }
 
   return (

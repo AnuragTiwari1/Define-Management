@@ -38,6 +38,7 @@
     "mobx": "^4.15.4",
     "mobx-react-lite": "^1.4.1",
     "mobx-state-tree": "^3.14.1",
+    "moment": "^2.29.1",
     "ramda": "0.27.0",
     "react": "16.9.0",
     "react-hook-form": "git+https://github.com/AnuragTiwari1/react-hook-form.git",
