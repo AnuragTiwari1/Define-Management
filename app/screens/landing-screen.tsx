@@ -1,30 +1,58 @@
 import React, { FunctionComponent as Component } from "react"
 import { observer } from "mobx-react-lite"
-import { StatusBar, ToastAndroid, View, TouchableOpacity } from "react-native"
+import { StatusBar, ToastAndroid, View, TouchableOpacity, Text } from "react-native"
 import { Screen } from "../components"
 import Axios from "axios"
-import MapView, { Marker } from "react-native-maps"
+import MapView from "react-native-maps"
 import Loader from "../components/loader"
 import { Button } from "react-native-paper"
+import CustomMarker from "../components/Marker"
+import BottomSheet from "reanimated-bottom-sheet"
+import AgentDetails from "../components/AgentDetails"
 
 const { API_URL } = require("../config/env")
 
+const defaultPicUrl =
+  "https://media-exp1.licdn.com/dms/image/C5103AQGndgxdx1_crA/profile-displayphoto-shrink_400_400/0/1549609591750?e=1613001600&v=beta&t=lpvIestzINfeSDORJWqepMm458MrfW8pGSIrrowkraA"
+
+export interface AgentsProps {
+  date1: string // "yyyy-mm-dd"
+  distance: string
+  id: string
+  latitude: string
+  longitude: string
+  name: string
+  userid: string
+  picUrl: string
+}
+
+const MAP_DELTA = {
+  latitudeDelta: 0.07,
+  longitudeDelta: 0.04,
+}
+
 export const LandingScreen: Component = observer(function LandingScreen() {
   const [isLoading, setLoading] = React.useState(false)
-  const [agents, setAgents] = React.useState([])
+  const [agents, setAgents] = React.useState([] as AgentsProps[])
+  const [selectedAgent, setSelectedAgent] = React.useState(null as null | AgentsProps)
   const [region, setRegion] = React.useState({
     latitude: 0,
     longitude: 0,
-    latitudeDelta: 0.07,
-    longitudeDelta: 0.04,
+    ...MAP_DELTA,
   })
 
+  const sheetRef = React.useRef(null)
+  console.log("the region is >>>>", region)
+
   React.useEffect(() => {
-    setRegion({
-      ...region,
-      latitude: Number(agents?.[0]?.latitude || 0),
-      longitude: Number(agents?.[0]?.longitude) || 0,
-    })
+    console.log("this wll be called")
+    if (agents.length && agents?.[0]) {
+      setRegion({
+        ...MAP_DELTA,
+        latitude: Number(agents?.[0]?.latitude),
+        longitude: Number(agents?.[0]?.longitude),
+      })
+    }
   }, [agents])
 
   React.useEffect(() => {
@@ -57,16 +85,22 @@ export const LandingScreen: Component = observer(function LandingScreen() {
       })
   }
 
+  const handleMarkerPress = (agent: AgentsProps) => {
+    setSelectedAgent(agent)
+    sheetRef.current.snapTo(1)
+  }
+
   return (
     <Screen style={{ flex: 1 }} preset="fixed">
       <StatusBar barStyle="light-content" backgroundColor="blue" />
       <MapView initialRegion={region} style={{ flex: 1 }}>
         {agents.map((marker, index) => (
-          <Marker
+          <CustomMarker
             key={index}
             coordinate={{ latitude: Number(marker.latitude), longitude: Number(marker.longitude) }}
             title={marker.name}
-            description={`userId:${marker.userId} distance travelled: ${marker.distance}km`}
+            picUrl={defaultPicUrl}
+            onPress={() => handleMarkerPress(marker)}
           />
         ))}
       </MapView>
@@ -77,6 +111,13 @@ export const LandingScreen: Component = observer(function LandingScreen() {
           <Button icon={require("../components/icon/icons/reload.png")}>Reload</Button>
         </View>
       </TouchableOpacity>
+      <BottomSheet
+        ref={ele => (sheetRef.current = ele)}
+        snapPoints={[450, 150, 0]}
+        initialSnap={2}
+        borderRadius={10}
+        renderContent={() => <AgentDetails {...selectedAgent} />}
+      />
     </Screen>
   )
 })
