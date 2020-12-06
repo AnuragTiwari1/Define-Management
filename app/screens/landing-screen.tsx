@@ -12,6 +12,20 @@ const { API_URL } = require("../config/env")
 export const LandingScreen: Component = observer(function LandingScreen() {
   const [isLoading, setLoading] = React.useState(false)
   const [agents, setAgents] = React.useState([])
+  const [region, setRegion] = React.useState({
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.07,
+    longitudeDelta: 0.04,
+  })
+
+  React.useEffect(() => {
+    setRegion({
+      ...region,
+      latitude: Number(agents?.[0]?.latitude || 0),
+      longitude: Number(agents?.[0]?.longitude) || 0,
+    })
+  }, [agents])
 
   React.useEffect(() => {
     fetchList()
@@ -46,15 +60,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   return (
     <Screen style={{ flex: 1 }} preset="fixed">
       <StatusBar barStyle="light-content" backgroundColor="blue" />
-      <MapView
-        initialRegion={{
-          latitude: Number(agents?.[0]?.latitude) || 0,
-          longitude: Number(agents?.[0]?.longitude) || 0,
-          latitudeDelta: 0.07,
-          longitudeDelta: 0.04,
-        }}
-        style={{ flex: 1 }}
-      >
+      <MapView initialRegion={region} style={{ flex: 1 }}>
         {agents.map((marker, index) => (
           <Marker
             key={index}
