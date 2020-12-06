@@ -42,10 +42,8 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   })
 
   const sheetRef = React.useRef(null)
-  console.log("the region is >>>>", region)
 
   React.useEffect(() => {
-    console.log("this wll be called")
     if (agents.length && agents?.[0]) {
       setRegion({
         ...MAP_DELTA,
@@ -93,7 +91,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   return (
     <Screen style={{ flex: 1 }} preset="fixed">
       <StatusBar barStyle="light-content" backgroundColor="blue" />
-      <MapView initialRegion={region} style={{ flex: 1 }}>
+      <MapView region={region} style={{ flex: 1 }}>
         {agents.map((marker, index) => (
           <CustomMarker
             key={index}
