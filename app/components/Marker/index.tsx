@@ -1,6 +1,7 @@
 import React from "react"
 import { View, Text, Image, ImageBackground } from "react-native"
 import MapView, { Marker } from "react-native-maps"
+import { generatePicUrl, defaultAvatar } from "../../utils/generatePIcUrl"
 
 export default function CustomMarker(props) {
   const { picUrl, ...rest } = props
@@ -23,7 +24,7 @@ export default function CustomMarker(props) {
           }}
         >
           <Image
-            source={{ uri: picUrl }}
+            source={{ uri: picUrl ? generatePicUrl(picUrl) : defaultAvatar }}
             style={{
               width: 40,
               height: 40,

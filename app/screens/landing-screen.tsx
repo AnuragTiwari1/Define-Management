@@ -9,6 +9,7 @@ import { Button } from "react-native-paper"
 import CustomMarker from "../components/Marker"
 import BottomSheet from "reanimated-bottom-sheet"
 import AgentDetails from "../components/AgentDetails"
+import moment from "moment"
 
 const { API_URL } = require("../config/env")
 
@@ -42,6 +43,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   })
 
   const sheetRef = React.useRef(null)
+  console.log("the agentss are>>>>", agents)
 
   React.useEffect(() => {
     if (agents.length && agents?.[0]) {
@@ -60,6 +62,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   const fetchList = () => {
     const formData = new FormData()
     formData.append("action", "getAllAgents")
+    formData.append("date1", moment().format("YYYY-MM-DD"))
 
     setLoading(true)
 
@@ -97,7 +100,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
             key={index}
             coordinate={{ latitude: Number(marker.latitude), longitude: Number(marker.longitude) }}
             title={marker.name}
-            picUrl={defaultPicUrl}
+            picUrl={marker.picUrl}
             onPress={() => handleMarkerPress(marker)}
           />
         ))}

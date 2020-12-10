@@ -4,7 +4,8 @@ import { AgentsProps } from "../../screens/landing-screen"
 import FontAwesome from "react-native-vector-icons/FontAwesome"
 import Axios from "axios"
 import { ActivityIndicator } from "react-native-paper"
-import moment from 'moment'
+import moment from "moment"
+import { defaultAvatar, generatePicUrl } from "../../utils/generatePIcUrl"
 
 interface ReportProps {
   date1: string
@@ -22,26 +23,13 @@ const Record = (props: ReportProps) => {
         justifyContent: "space-between",
       }}
     >
-      <Text>{moment(props.date1, "YYYY-MM-DD").format('LL')}</Text>
+      <Text>{moment(props.date1, "YYYY-MM-DD").format("LL")}</Text>
       <Text>{props.distance} km</Text>
     </View>
   )
 }
 
-const dummyAgentList = [
-  { date1: "2020-03-01", distance: "30" },
-  { date1: "2020-03-02", distance: "30" },
-  { date1: "2020-03-03", distance: "30" },
-  { date1: "2020-03-04", distance: "30" },
-  { date1: "2020-03-05", distance: "30" },
-  { date1: "2020-03-06", distance: "30" },
-  { date1: "2020-03-07", distance: "30" },
-  { date1: "2020-03-08", distance: "30" },
-]
-
 const { API_URL } = require("../../config/env")
-const defaultAvatar =
-  "https://www.pngfind.com/pngs/m/5-52097_avatar-png-pic-vector-avatar-icon-png-transparent.png"
 
 export default function AgentDetails(props: AgentsProps) {
   const [agentReport, setAgentReport] = React.useState([] as ReportProps)
@@ -55,23 +43,19 @@ export default function AgentDetails(props: AgentsProps) {
 
       setLoading(true)
 
-      // Axios.request({
-      //   url: "",
-      //   baseURL: API_URL,
-      //   data: formData,
-      //   method: "POST",
-      // })
-      //   .then(({ data }) => {
-      //     setAgentReport([...data])
-      //     setLoading(false)
-      //   })
-      //   .catch(e => {
-      //     setLoading(false)
-      //   })
-      setTimeout(() => {
-        setAgentReport(dummyAgentList)
-        setLoading(false)
-      }, 2000)
+      Axios.request({
+        url: "",
+        baseURL: API_URL,
+        data: formData,
+        method: "POST",
+      })
+        .then(({ data }) => {
+          setAgentReport([...data])
+          setLoading(false)
+        })
+        .catch(e => {
+          setLoading(false)
+        })
     }
   }, [props.id])
 
@@ -84,7 +68,7 @@ export default function AgentDetails(props: AgentsProps) {
     >
       <View style={{ flexDirection: "row" }}>
         <Image
-          source={{ uri: props.picUrl || defaultAvatar }}
+          source={{ uri: props.picUrl ? generatePicUrl(props.picUrl) : defaultAvatar }}
           style={{ width: 70, height: 70, borderRadius: 35 }}
         />
         <View style={{ margin: 10, flex: 1 }}>
