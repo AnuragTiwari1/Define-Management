@@ -6,33 +6,46 @@ import Axios from "axios"
 import { ActivityIndicator } from "react-native-paper"
 import moment from "moment"
 import { defaultAvatar, generatePicUrl } from "../../utils/generatePIcUrl"
+import { TouchableOpacity } from "react-native-gesture-handler"
 
 interface ReportProps {
   date1: string
   distance: string
-}
-
-const Record = (props: ReportProps) => {
-  return (
-    <View
-      style={{
-        padding: 15,
-        borderBottomWidth: 1,
-        borderColor: "gray",
-        flexDirection: "row",
-        justifyContent: "space-between",
-      }}
-    >
-      <Text>{moment(props.date1, "YYYY-MM-DD").format("LL")}</Text>
-      <Text>{props.distance} km</Text>
-    </View>
-  )
+  onDatePress: (date: string) => void
 }
 
 const { API_URL } = require("../../config/env")
 
-export default function AgentDetails(props: AgentsProps) {
-  const [agentReport, setAgentReport] = React.useState([] as ReportProps)
+const Record = (props: ReportProps) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        props.onDatePress(props.date1)
+        // console.log("the date pressed", props.date1)
+        // console.log("the jdkdkdkdkkddk")
+      }}
+    >
+      <View
+        style={{
+          padding: 15,
+          borderBottomWidth: 1,
+          borderColor: "gray",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+        pointerEvents="none"
+      >
+        <Text>{moment(props.date1, "YYYY-MM-DD").format("LL")}</Text>
+        <Text>{props.distance} km</Text>
+      </View>
+    </TouchableOpacity>
+  )
+}
+
+export default function AgentDetails(
+  props: AgentsProps & { isLoadingTimeSheet: boolean; onDatePress: (date: string) => void },
+) {
+  const [agentReport, setAgentReport] = React.useState([] as ReportProps[])
   const [loading, setLoading] = React.useState(false)
 
   React.useEffect(() => {
@@ -51,6 +64,7 @@ export default function AgentDetails(props: AgentsProps) {
       })
         .then(({ data }) => {
           setAgentReport([...data])
+          props.onDatePress(data[0].date1)
           setLoading(false)
         })
         .catch(e => {
@@ -81,12 +95,17 @@ export default function AgentDetails(props: AgentsProps) {
         </View>
       </View>
 
-      <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 15 }}>
-        Travel Record
-      </Text>
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+        <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 15 }}>
+          Travel Record
+        </Text>
+        <View style={{ position: "absolute", right: 10 }}>
+          {props.isLoadingTimeSheet && <ActivityIndicator />}
+        </View>
+      </View>
       <FlatList
         data={agentReport}
-        renderItem={({ item }) => <Record {...item} />}
+        renderItem={({ item }) => <Record {...item} onDatePress={props.onDatePress} />}
         ListEmptyComponent={
           loading ? <ActivityIndicator /> : <Text>Reports are unavailable for this user</Text>
         }

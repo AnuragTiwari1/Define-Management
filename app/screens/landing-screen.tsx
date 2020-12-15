@@ -1,9 +1,9 @@
 import React, { FunctionComponent as Component } from "react"
 import { observer } from "mobx-react-lite"
-import { StatusBar, ToastAndroid, View, TouchableOpacity, Text } from "react-native"
+import { StatusBar, ToastAndroid, View, TouchableOpacity } from "react-native"
 import { Screen } from "../components"
 import Axios from "axios"
-import MapView from "react-native-maps"
+import MapView, { Polyline } from "react-native-maps"
 import Loader from "../components/loader"
 import { Button } from "react-native-paper"
 import CustomMarker from "../components/Marker"
@@ -12,9 +12,6 @@ import AgentDetails from "../components/AgentDetails"
 import moment from "moment"
 
 const { API_URL } = require("../config/env")
-
-const defaultPicUrl =
-  "https://media-exp1.licdn.com/dms/image/C5103AQGndgxdx1_crA/profile-displayphoto-shrink_400_400/0/1549609591750?e=1613001600&v=beta&t=lpvIestzINfeSDORJWqepMm458MrfW8pGSIrrowkraA"
 
 export interface AgentsProps {
   date1: string // "yyyy-mm-dd"
@@ -32,10 +29,20 @@ const MAP_DELTA = {
   longitudeDelta: 0.04,
 }
 
+interface ITimeSheet {
+  latitude: string
+  longitude: string
+}
+
 export const LandingScreen: Component = observer(function LandingScreen() {
   const [isLoading, setLoading] = React.useState(false)
   const [agents, setAgents] = React.useState([] as AgentsProps[])
   const [selectedAgent, setSelectedAgent] = React.useState(null as null | AgentsProps)
+  const [timesheet, setTimeSheet] = React.useState([] as ITimeSheet[])
+  const [selectedDate, setSelectedDate] = React.useState("" as string)
+  const [mode, setMode] = React.useState<"agents" | "route">("agents")
+  const [isLoadingTimeSheet, setTimeSheetLoading] = React.useState(false)
+
   const [region, setRegion] = React.useState({
     latitude: 0,
     longitude: 0,
@@ -43,7 +50,6 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   })
 
   const sheetRef = React.useRef(null)
-  console.log("the agentss are>>>>", agents)
 
   React.useEffect(() => {
     if (agents.length && agents?.[0]) {
@@ -58,6 +64,21 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   React.useEffect(() => {
     fetchList()
   }, [])
+
+  React.useEffect(() => {
+    if (selectedDate && selectedAgent) {
+      setTimeSheetLoading(true)
+      setTimeout(() => {
+        setTimeSheet([
+          { latitude: "25.6170267", longitude: "85.0913881" },
+          { latitude: "25.6665248", longitude: "85.08161628" },
+          { latitude: "25.6734153", longitude: "85.08577787" },
+          { latitude: "25.6948605", longitude: "85.08596065" },
+        ])
+        setTimeSheetLoading(false)
+      }, 2000)
+    }
+  }, [selectedAgent, selectedDate])
 
   const fetchList = () => {
     const formData = new FormData()
@@ -95,15 +116,29 @@ export const LandingScreen: Component = observer(function LandingScreen() {
     <Screen style={{ flex: 1 }} preset="fixed">
       <StatusBar barStyle="light-content" backgroundColor="blue" />
       <MapView region={region} style={{ flex: 1 }}>
-        {agents.map((marker, index) => (
-          <CustomMarker
-            key={index}
-            coordinate={{ latitude: Number(marker.latitude), longitude: Number(marker.longitude) }}
-            title={marker.name}
-            picUrl={marker.picUrl}
-            onPress={() => handleMarkerPress(marker)}
+        {mode === "agents" &&
+          agents.map((marker, index) => (
+            <CustomMarker
+              key={index}
+              coordinate={{
+                latitude: Number(marker.latitude),
+                longitude: Number(marker.longitude),
+              }}
+              title={marker.name}
+              picUrl={marker.picUrl}
+              onPress={() => handleMarkerPress(marker)}
+            />
+          ))}
+        {mode === "route" && (
+          <Polyline
+            coordinates={timesheet.map(({ latitude, longitude }) => ({
+              latitude: Number(latitude),
+              longitude: Number(longitude),
+            }))}
+            strokeColor="#000"
+            strokeWidth={6}
           />
-        ))}
+        )}
       </MapView>
       <Loader loading={isLoading} />
 
@@ -116,8 +151,27 @@ export const LandingScreen: Component = observer(function LandingScreen() {
         ref={ele => (sheetRef.current = ele)}
         snapPoints={[450, 150, 0]}
         initialSnap={2}
+        onOpenEnd={() => {
+          setMode("route")
+          setRegion({
+            ...MAP_DELTA,
+            latitude: Number(timesheet[0].latitude),
+            longitude: Number(timesheet[0].longitude),
+          })
+        }}
+        onCloseEnd={() => {
+          setMode("agents")
+          setSelectedAgent(null)
+          setSelectedDate("")
+        }}
         borderRadius={10}
-        renderContent={() => <AgentDetails {...selectedAgent} />}
+        renderContent={() => (
+          <AgentDetails
+            isLoadingTimeSheet={isLoadingTimeSheet}
+            {...selectedAgent}
+            onDatePress={setSelectedDate}
+          />
+        )}
       />
     </Screen>
   )
