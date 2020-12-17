@@ -68,15 +68,25 @@ export const LandingScreen: Component = observer(function LandingScreen() {
   React.useEffect(() => {
     if (selectedDate && selectedAgent) {
       setTimeSheetLoading(true)
-      setTimeout(() => {
-        setTimeSheet([
-          { latitude: "25.6170267", longitude: "85.0913881" },
-          { latitude: "25.6665248", longitude: "85.08161628" },
-          { latitude: "25.6734153", longitude: "85.08577787" },
-          { latitude: "25.6948605", longitude: "85.08596065" },
-        ])
-        setTimeSheetLoading(false)
-      }, 2000)
+      const formData = new FormData()
+      formData.append("action", "fetchTimeLog")
+      formData.append("userid", selectedAgent.userid)
+      formData.append("date1", selectedDate)
+
+      Axios.request({
+        url: "",
+        baseURL: API_URL,
+        data: formData,
+        method: "POST",
+      })
+        .then(({ data }) => {
+          setTimeSheet(data)
+          setTimeSheetLoading(false)
+        })
+        .catch(e => {
+          console.log(e)
+          setTimeSheetLoading(false)
+        })
     }
   }, [selectedAgent, selectedDate])
 
@@ -131,7 +141,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
           ))}
         {mode === "route" && (
           <Polyline
-            coordinates={timesheet.map(({ latitude, longitude }) => ({
+            coordinates={(timesheet || []).map(({ latitude, longitude }) => ({
               latitude: Number(latitude),
               longitude: Number(longitude),
             }))}
@@ -155,8 +165,8 @@ export const LandingScreen: Component = observer(function LandingScreen() {
           setMode("route")
           setRegion({
             ...MAP_DELTA,
-            latitude: Number(timesheet[0].latitude),
-            longitude: Number(timesheet[0].longitude),
+            latitude: Number(timesheet?.[0]?.latitude || 0),
+            longitude: Number(timesheet?.[0]?.longitude || 0),
           })
         }}
         onCloseEnd={() => {
