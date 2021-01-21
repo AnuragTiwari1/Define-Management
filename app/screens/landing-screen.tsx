@@ -159,7 +159,7 @@ export const LandingScreen: Component = observer(function LandingScreen() {
       </TouchableOpacity>
       <BottomSheet
         ref={ele => (sheetRef.current = ele)}
-        snapPoints={[450, 150, 0]}
+        snapPoints={[450, 150, 38]}
         initialSnap={2}
         onOpenEnd={() => {
           setMode("route")
@@ -169,10 +169,9 @@ export const LandingScreen: Component = observer(function LandingScreen() {
             longitude: Number(timesheet?.[0]?.longitude || 0),
           })
         }}
+        enabledGestureInteraction={selectedAgent ?? false}
         onCloseEnd={() => {
           setMode("agents")
-          setSelectedAgent(null)
-          setSelectedDate("")
         }}
         borderRadius={10}
         renderContent={() => (

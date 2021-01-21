@@ -7,6 +7,7 @@ import { ActivityIndicator } from "react-native-paper"
 import moment from "moment"
 import { defaultAvatar, generatePicUrl } from "../../utils/generatePIcUrl"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import { color } from "../../theme"
 
 interface ReportProps {
   date1: string
@@ -80,6 +81,16 @@ export default function AgentDetails(
         padding: 16,
       }}
     >
+      <View
+        style={{
+          width: 100,
+          height: 5,
+          borderRadius: 15,
+          backgroundColor: color.line,
+          alignSelf: "center",
+          marginBottom: 15,
+        }}
+      ></View>
       <View style={{ flexDirection: "row" }}>
         <Image
           source={{ uri: props.picUrl ? generatePicUrl(props.picUrl) : defaultAvatar }}
@@ -105,6 +116,7 @@ export default function AgentDetails(
       </View>
       <FlatList
         data={agentReport}
+        inverted
         renderItem={({ item }) => <Record {...item} onDatePress={props.onDatePress} />}
         ListEmptyComponent={
           loading ? <ActivityIndicator /> : <Text>Reports are unavailable for this user</Text>
